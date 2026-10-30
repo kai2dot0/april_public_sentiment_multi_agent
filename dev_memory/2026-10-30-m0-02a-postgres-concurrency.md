@@ -61,7 +61,9 @@
 - 首轮 `make test-pg-concurrency`：22 个真实 PG 实验通过；随后新增统一锁序双事务实验。
 - `TEST_DATABASE_URL=... make test-integration`：最终 24 项通过，其中 PG 并发 23 项、原迁移 1 项。总收集 80 项（56 单元 + 24 集成）。
 - 实验后只读查询确认 `m0_lock_probe_` 前缀剩余 schema 数为 0。
-- 新增 11 个 Python 文件的 header 与语法检查通过；最终锁序测试采用独立 HLD 期望顺序，不从待测枚举排列反推。PR 地址在创建后回填，远端 CI 通过才合并。
+- 新增 11 个 Python 文件的 header 与语法、git diff --check 均通过；最终锁序测试采用独立 HLD 期望顺序，不从待测枚举排列反推。
+
+交付 PR：[PR #2](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/2)。最终远端 CI、合并时间和 merge SHA 以该 PR 的 GitHub 记录为准；只在全部检查通过后合并，没有直接向 main 提交。实现提交为 `7e6b538`，后续提交仅关联记录或修复验证发现的问题。
 
 当前复用原 CI 的 `make test-integration` 自动运行新增 PG 用例，无新增工作流或测试框架。Make 增加 `test-pg-concurrency` 用于定向重放；pytest marker 在 pyproject 中登记，未引入依赖变化。
 

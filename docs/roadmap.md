@@ -20,7 +20,7 @@
 
 | 分项 | 交付 | 状态 |
 | --- | --- | --- |
-| M0-02A | PG 行锁 16 对、SKIP LOCKED、SET LOCAL、Read Committed、死锁/整事务重试、守卫与命名屏障 | 本次实现，结果见对应 dev_memory、规则映射与 PR CI |
+| M0-02A | PG 行锁 16 对、SKIP LOCKED、SET LOCAL、Read Committed、死锁/整事务重试、守卫与命名屏障 | 本次实现：[PR #2](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/2)，结果见对应 dev_memory、规则映射与 PR CI |
 | M0-02B | Kafka 幂等生产者配置、ACK、重试与确认行为 | 待开发 |
 | M0-02C | RFC 8785/JCS 候选与测试向量 | 待开发 |
 | M0-02D | CEL 子集与成本/超时约束 | 待开发 |
