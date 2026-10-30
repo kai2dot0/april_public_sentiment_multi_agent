@@ -30,7 +30,7 @@ def wait_for(check: Callable[[], bool], label: str, timeout: float = 60) -> None
             if check():
                 print(f"{label}: passed")
                 return
-        except (URLError, TimeoutError):
+        except (URLError, TimeoutError, ConnectionError):
             # 容器启动与异步导出期间的临时不可用可在同一预算内重试。
             pass
         time.sleep(1)

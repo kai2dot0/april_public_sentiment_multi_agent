@@ -65,6 +65,7 @@
 6. FastAPI / Starlette 的 TestClient 对原 httpx 有弃用提示，改直接使用 AsyncClient + ASGITransport，未额外引入 httpx2。
 7. Alembic 增加 `path_separator=os` 消除 legacy 配置告警；迁移时区固定 Asia/Shanghai。
 8. GitHub 连接器及本机默认账号只读；使用本机已登录的仓库所有者 kai2dot0 完成后续 GitHub 操作，不切换用户全局默认账号，令牌不输出、不落库。
+9. 远端 Linux 首次启动 Grafana 时出现 `ConnectionResetError`，原 smoke 仅重试 URLError/TimeoutError，导致基础设施 CI 失败。修复为同时捕获 ConnectionError（覆盖连接重置和 RemoteDisconnected），仍使用原有 60 秒有界预算；补充两类回归反例，不用延长固定 sleep 或跳过检查掩盖问题。失败证据：[CI 41039094119](https://github.com/kai2dot0/april_public_sentiment_multi_agent/actions/runs/41039094119)。修复后本地完整门禁和实际合成导出复验通过，远端最终结果见 PR checks。
 
 ## 5. 验证记录
 
@@ -78,7 +79,7 @@
 - `make smoke-infra`：Redis PONG，Kafka 元数据查询成功。
 - 四个可观测服务 HTTP 检查均 200。
 - `make smoke-observability`：OTel/Grafana health、Jaeger trace export、Prometheus metric scrape 均 passed。
-- `make check`：最终 18 个单元与架构反例测试通过、1 个集成测试按 marker 单独运行，无告警；8 条 import-linter 契约全部 kept。
+- `make check`：初版 18 个单元与架构反例通过；远端冷启动修复后为 20 个，完整门禁复验通过。1 个集成测试按 marker 单独运行，无告警；8 条 import-linter 契约全部 kept。
 - 临时生成一份 Alembic 迁移：生成 header、Asia/Shanghai 日期和 Python 语法均有效，未在业务迁移目录遗留文件。
 - 新增 Python 文件语法及所有新增代码/配置顶部 AI header 检查通过；原 hld 文档未修改。
 - 临时随机本机端口真实启动 uvicorn 并请求 `/health/live`：通过；验证后已关闭该临时 API。
