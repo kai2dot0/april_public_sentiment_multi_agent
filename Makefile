@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-jcs test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -23,6 +23,10 @@ migration-check:
 
 test:
 	uv run --locked pytest -m "not integration"
+
+# 离线重放 RFC 测试向量、输入边界与摘要一致性验证。
+test-jcs:
+	uv run --locked pytest tests/unit/test_canonical_json.py
 
 # 必须显式设置 TEST_DATABASE_URL；缺少配置将失败，不能以跳过冒充验证。
 test-integration:
