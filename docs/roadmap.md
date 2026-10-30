@@ -24,7 +24,7 @@
 | M0-02B | Kafka 幂等生产者配置、ACK、重试与确认行为 | 已通过 [PR #3](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/3) 合并 |
 | M0-02C | RFC 8785/JCS 候选与测试向量 | 已通过 [PR #4](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/4) 合并 |
 | M0-02D | CEL 子集与成本/超时约束 | 已通过 [PR #5](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/5) 合并 |
-| M0-02E | Pydantic/schema/digest 元数据、未知枚举、Worker 传输形态、穷举规模验证 | 本轮实现；见对应 dev_memory、ADR 0006 和 PR CI；正式模型、完整 H11 仍待后续阶段 |
+| M0-02E | Pydantic/schema/digest 元数据、未知枚举、Worker 传输形态、穷举规模验证 | 本轮实现：[PR #6](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/6)；见对应 dev_memory、ADR 0006 和 PR CI；正式模型、完整 H11 仍待后续阶段 |
 | M0-02F | 进程组、cgroup、网络与缓存清理原型 | 待开发 |
 | M0-02G | Jetstream/AppView 协议、游标、缓存与许可核实 | 待核实，不以设计文字代替实际来源证据 |
 

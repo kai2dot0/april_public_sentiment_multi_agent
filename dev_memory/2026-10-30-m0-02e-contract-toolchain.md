@@ -93,7 +93,7 @@ rtk proxy env UV_CACHE_DIR=.cache/uv UV_PYTHON_INSTALL_DIR=.cache/python uv run 
 rtk proxy env UV_CACHE_DIR=.cache/uv UV_PYTHON_INSTALL_DIR=.cache/python uv run --locked python -m scripts.measure_contract_matrix --shard-index 0 --shard-count 3
 ```
 
-远端仍须跑完整 PG / Kafka / observability 回归，最终结果以本 PR 检查为准；本轮未重复扰动本地容器。PR 链接在创建后补录，不把未执行项记作通过。
+远端仍须跑完整 PG / Kafka / observability 回归；本轮未重复扰动本地容器。交付 [PR #6](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/6)，实现提交 `9affd27`；最终提交的 CI（含 Linux 扫描测量）、merge SHA 与合并状态以该 PR 记录为准，全部通过后才合并，不把未执行项记作通过。
 
 ## 7. 接手顺序、范围边界与回退
 
