@@ -26,7 +26,7 @@
 | M0-02D | CEL 子集与成本/超时约束 | 已通过 [PR #5](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/5) 合并 |
 | M0-02E | Pydantic/schema/digest 元数据、未知枚举、Worker 传输形态、穷举规模验证 | 已通过 [PR #6](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/6) 合并；正式模型、完整 H11 仍待后续阶段 |
 | M0-02F | 进程组、cgroup、网络与缓存清理原型 | 已通过 [PR #7](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/7) 合并；见对应 dev_memory、ADR 0007 与专用 isolation CI |
-| M0-02G | Jetstream/AppView 协议、游标、缓存与许可核实 | 本轮技术核实、合成回归和公网元数据实测；ADR 0008 / G-01–08 登记表，采集禁用；完整来源资格和用途许可保持开放 |
+| M0-02G | Jetstream/AppView 协议、游标、缓存与许可核实 | 技术核实见 [PR #8](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/8)：合成回归和公网元数据实测、ADR 0008 / G-01–08 登记表；采集禁用，完整来源资格和用途许可保持开放 |
 
 ## 当前已知约束
 

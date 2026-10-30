@@ -92,4 +92,4 @@ rtk proxy make probe-source-metadata
 
 ## 8. PR 与交付
 
-待补本模块 PR 链接与最终受检提交。上一模块 PR #7 合并证据已补原 F memory；本模块将以实际 PR / CI 记录为准，不直接推 main。
+本模块 [PR #8](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/8)，实现提交 `86bcbf1`；本次文档补记也进入同一 PR，必须等待其最终 head 的 checks / infrastructure / isolation 三项全部成功才合并。最终受检提交、CI run、merge SHA / 状态以 PR 实际记录为准，不把先前 head 的绿灯移用到后续提交。上一模块 PR #7 合并证据已补原 F memory；本模块不直接推 main。
