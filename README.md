@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架、PG / Kafka / JCS 验证，当前增加 **M0-02D CEL 技术验证**：受限函数、输入限额、真实求值超时与进程回收。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架及 PG / Kafka / JCS / CEL 验证，当前增加 **M0-02E 契约工具链验证**：schema 漂移门禁、未知枚举、真实 HTTP/JSON 往返与组合规模扫描。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -8,7 +8,7 @@
 
 ```bash
 make setup          # 安装锁定依赖；仅在 .env 不存在时复制示例
-make check          # 不依赖容器的架构、迁移链和单元检查
+make check          # 不依赖容器的架构、迁移链、schema 和单元检查
 make compose-check  # 检查全部 Compose 配置，不启动容器
 make infra-up       # 启动 PostgreSQL 16 + pgvector、Kafka、Redis，等待健康
 make migrate        # 对 .env 中 DATABASE_URL 执行迁移
@@ -67,6 +67,20 @@ make test-cel       # 离线运行子集、准入与真实子进程超时测试�
 内部 `evaluate_rule(expression, facts)` 使用锁定的 `common-expression-language 0.10.0`。表达式通过 stdin 进入独立进程，求值前检查完整函数引用；只返回 bool，语法、类型和超时错误单独报错。现阶段限制 4096 字节表达式、每输入集合 128 项和 64 KiB 请求，缺省 2 秒截止时间，超时 kill 并回收。
 
 本轮选择 HLD 允许的超时方案；没有精确操作成本或硬内存上限，也未完成 OS 沙箱。候选比较、完整预算与边界见 [ADR 0005](docs/decisions/0005-cel-subset.md) 和 [开发记录](dev_memory/2026-10-30-m0-02d-cel-subset.md)。领域包规则表、执行配置锁和 risk-grader 按路线图在 M1 接入。
+
+## 契约工具链验证
+
+```bash
+make test-contract-toolchain  # schema、真实 loopback HTTP/JSON、未知枚举与规模探针
+make schema-check            # 只读检查模型导出与快照，不自动改写
+make measure-contract-matrix # 全量维度扫描和耗时；不是 H11 业务验收
+```
+
+采用 HTTP/JSON，复用既有依赖。`contracts/tooling.py` 提供严格字节解码与字段元数据原型；测试模型只导出到 `contracts/schemas/probes/`，`make check` 比对漂移。修改模型后可显式 `make schema-write`，审查生成 diff 后通过 PR。
+
+未知枚举保持原始字符串，墓碑载荷经真实 HTTP 往返仍保留；重复键、非法编码和结构损坏明确失败。探针端点仅在测试 app，正式 API 不开放它。完整 FetchPage、控制提交和签名按后续阶段实现。
+
+当前维度轮廓全量 3,317,760 个组合，显式排除后扫描 2,488,320 个；耗时只含扫描和未知值检查，不代表完整决策表。方案、数值域发现及 CI 策略见 [ADR 0006](docs/decisions/0006-contract-toolchain.md)、[实测记录](docs/validation/m0-02e-matrix-scan.json) 和 [dev_memory](dev_memory/2026-10-30-m0-02e-contract-toolchain.md)。
 
 ## 可观测开发环境
 

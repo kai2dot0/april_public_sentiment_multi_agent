@@ -1,0 +1,36 @@
+{
+  "$defs": {
+    "KnownStatus": {
+      "enum": [
+        "ok",
+        "rate_limited",
+        "transport_error",
+        "protocol_error",
+        "gone",
+        "forbidden",
+        "blocked",
+        "auth_required",
+        "cursor_expired",
+        "cursor_gap",
+        "invalid_job"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "构造侧可用严格枚举；不能用它替代接收侧开放字符串。",
+  "properties": {
+    "status": {
+      "$ref": "#/$defs/KnownStatus",
+      "default_semantics": "required; known values only",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "status"
+  ],
+  "title": "StrictStatusProbe",
+  "type": "object"
+}

@@ -24,6 +24,7 @@ jobs:
           version: "0.9.21"
       - run: make setup
       - run: make check
+      - run: make measure-contract-matrix
       - run: make compose-check
 
   infrastructure:
