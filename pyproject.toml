@@ -8,6 +8,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.14,<2",
+    "confluent-kafka>=2.16.1,<3",
     "fastapi>=0.115,<1",
     "psycopg[binary]>=3.2,<4",
     "pydantic>=2.10,<3",
@@ -33,6 +34,7 @@ addopts = "-ra --strict-markers"
 markers = [
     "integration: requires an explicitly configured PostgreSQL database",
     "postgres_concurrency: real PostgreSQL locking and transaction experiments",
+    "kafka: real Kafka delivery and retry experiments on a disposable test broker",
 ]
 
 [tool.importlinter]
