@@ -5,3 +5,4 @@
 | 记录 | 范围 |
 | --- | --- |
 | [2026-10-30-m0-01-project-foundation.md](2026-10-30-m0-01-project-foundation.md) | 首个工程骨架、开发环境、CI、迁移与接手顺序 |
+| [2026-10-30-m0-02a-postgres-concurrency.md](2026-10-30-m0-02a-postgres-concurrency.md) | PG 锁序守卫、命名屏障、真实锁矩阵、死锁与重试实验 |

@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。当前交付 **M0-01 工程骨架**，提供可运行的 API 入口、开发基础设施、数据库迁移和基础 CI；任务编排、采集、证据、模型分析与报告尚未实现。M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付 **M0-01 工程骨架**，当前增加 **M0-02A PostgreSQL 并发技术验证**：内部锁序守卫、命名屏障和真实 PG 实验。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -29,6 +29,8 @@ TEST_DATABASE_URL='postgresql://april:april_local_only@127.0.0.1:15432/april' ma
 ```
 
 集成测试实际执行迁移并检查重复升级、PostgreSQL 16、Read Committed、pgvector 运算。缺少 `TEST_DATABASE_URL` 时明确失败，不自动跳过。
+
+同一套集成命令还会执行 PG 并发实验：四种行锁 16 对、SKIP LOCKED、事务局部配置、等锁后重读、真实死锁/完整回滚重试和统一锁序。每个实验使用独立随机 schema，关闭连接后仅清理自己创建的命名空间。仅重放该模块时可运行 `TEST_DATABASE_URL='...' make test-pg-concurrency`。方案与边界见 [ADR 0002](docs/decisions/0002-postgres-concurrency.md) 和 [开发记录](dev_memory/2026-10-30-m0-02a-postgres-concurrency.md)；守卫不是正式提交或删除协议的替代实现。
 
 迁移 URL 由环境变量提供，接受 `postgresql://` 和 `postgresql+psycopg://`。SQLAlchemy 只用于 Alembic；未来运行时的提交路径使用 psycopg 显式 SQL。初始迁移仅启用 vector 扩展，不提前定义任务、证据或控制对象表。
 
