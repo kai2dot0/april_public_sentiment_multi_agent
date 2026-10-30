@@ -4,14 +4,14 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-jcs test-cel test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-jcs test-cel test-contract-toolchain schema-check schema-write measure-contract-matrix test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
 	@test -f .env || cp .env.example .env
 	uv sync --locked
 
-check: lint migration-check test
+check: lint migration-check schema-check test
 
 lint:
 	uv lock --check
@@ -31,6 +31,20 @@ test-jcs:
 # CEL 子集、准入规模与真实子进程超时 / 回收验证。
 test-cel:
 	uv run --locked pytest tests/unit/test_cel_rules.py
+
+# 测试 app 的真实 loopback HTTP / JSON、模型与规模探针。
+test-contract-toolchain:
+	uv run --locked pytest tests/unit/test_contract_toolchain.py tests/unit/test_decision_matrix.py
+
+schema-check:
+	uv run --locked python -m scripts.check_contract_schemas
+
+# 显式再生成后必须审查 diff，CI 检查不会自动修复漂移。
+schema-write:
+	uv run --locked python -m scripts.check_contract_schemas --write
+
+measure-contract-matrix:
+	uv run --locked python -m scripts.measure_contract_matrix
 
 # 必须显式设置 TEST_DATABASE_URL；缺少配置将失败，不能以跳过冒充验证。
 test-integration:

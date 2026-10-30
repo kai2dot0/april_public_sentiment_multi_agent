@@ -1,0 +1,104 @@
+{
+  "measured_at_utc": "2026-10-30T14:48:52+00:00",
+  "scope": "dimension_scan_and_unknown_enum_probe_only; not_H11",
+  "execution_form": "bounded_slice",
+  "dimensions": {
+    "schedule": [
+      "periodic",
+      "continuous"
+    ],
+    "status": [
+      "ok",
+      "rate_limited",
+      "transport_error",
+      "protocol_error",
+      "gone",
+      "forbidden",
+      "blocked",
+      "auth_required",
+      "cursor_expired",
+      "cursor_gap",
+      "invalid_job",
+      "__unknown_enum__"
+    ],
+    "status_reason": [
+      null,
+      "insufficient_scope",
+      "ban",
+      "__unknown_enum__",
+      "free diagnostic text"
+    ],
+    "failure_scope": [
+      null,
+      "item",
+      "job",
+      "__unknown_enum__"
+    ],
+    "completeness": [
+      "complete",
+      "partial",
+      "unknown",
+      "__unknown_enum__"
+    ],
+    "end_reason": [
+      null,
+      "source_exhausted",
+      "task_budget_exhausted",
+      "cycle_budget_exhausted",
+      "slice_end",
+      "__unknown_enum__"
+    ],
+    "continuation": [
+      false,
+      true
+    ],
+    "effective_prefix": [
+      false,
+      true
+    ],
+    "single_resource": [
+      false,
+      true
+    ],
+    "item_outcomes": [
+      "empty",
+      "in_present_or_failed",
+      "in_contains_missing",
+      "outside_without_missing",
+      "outside_contains_missing",
+      "in_unknown_without_missing",
+      "in_unknown_with_missing",
+      "outside_unknown_without_missing",
+      "outside_unknown_with_missing"
+    ],
+    "request_mode": [
+      "addressed",
+      "query_or_stream"
+    ],
+    "control_signals_valid": [
+      false,
+      true
+    ]
+  },
+  "exclusions": [
+    "single_resource AND request_mode=query_or_stream; no verdict assigned"
+  ],
+  "environment": {
+    "python": "3.12.12",
+    "system": "Darwin",
+    "machine": "arm64",
+    "pydantic": "2.14.2"
+  },
+  "measurement": {
+    "raw_total": 3317760,
+    "selected_total": 3317760,
+    "excluded_single_query": 829440,
+    "enumerated": 2488320,
+    "unknown_enum_probe": 1915920,
+    "ordinal_checksum": 4127807278080,
+    "shard_index": 0,
+    "shard_count": 1,
+    "elapsed_seconds": 0.4093618340557441,
+    "profile_digest": "ca4507e30c68e3fbaece6d1ec9a29fe6fa95cc1347451e62bd7f8aba6ec5c136"
+  }
+}

@@ -9,3 +9,4 @@
 | [2026-10-30-m0-02b-kafka-delivery.md](2026-10-30-m0-02b-kafka-delivery.md) | Kafka 幂等配置、ACK 前沿、真实 ACK 丢失/超时与重发实验 |
 | [2026-10-30-m0-02c-jcs-canonicalization.md](2026-10-30-m0-02c-jcs-canonicalization.md) | JCS 候选选型、RFC 全部数字向量、严格 JSON 边界、摘要原型与后续接线 |
 | [2026-10-30-m0-02d-cel-subset.md](2026-10-30-m0-02d-cel-subset.md) | CEL 选型反例、函数子集、输入规模、真实超时回收与后续领域包接入 |
+| [2026-10-30-m0-02e-contract-toolchain.md](2026-10-30-m0-02e-contract-toolchain.md) | schema / 字段元数据、开放枚举、真实 HTTP/JSON、有限维度扫描与契约冻结接手 |

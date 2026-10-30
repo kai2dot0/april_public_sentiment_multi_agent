@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "OutcomeProbe": {
+      "additionalProperties": false,
+      "description": "只验证条目引用与开放 outcome 字符串，不实现观测集合判定。",
+      "properties": {
+        "item_ref": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Item Ref",
+          "type": "string"
+        },
+        "outcome": {
+          "default_semantics": "required; unknown values retained",
+          "digest": "include",
+          "routable": false,
+          "title": "Outcome",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item_ref",
+        "outcome"
+      ],
+      "title": "OutcomeProbe",
+      "type": "object"
+    },
+    "PageWireProbe": {
+      "additionalProperties": false,
+      "description": "FetchPage 字段片段的结构验证探针，枚举全部以原始字符串接收。",
+      "properties": {
+        "completeness": {
+          "default_semantics": "required; unknown values retained",
+          "digest": "include",
+          "routable": false,
+          "title": "Completeness",
+          "type": "string"
+        },
+        "end_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent expands to null",
+          "digest": "include",
+          "routable": false,
+          "title": "End Reason"
+        },
+        "failure_scope": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent expands to null",
+          "digest": "include",
+          "routable": false,
+          "title": "Failure Scope"
+        },
+        "item_outcomes": {
+          "default_semantics": "absent expands to empty array",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/OutcomeProbe"
+          },
+          "routable": false,
+          "title": "Item Outcomes",
+          "type": "array"
+        },
+        "status": {
+          "default_semantics": "required; unknown values retained",
+          "digest": "include",
+          "routable": false,
+          "title": "Status",
+          "type": "string"
+        },
+        "status_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent expands to null; diagnostic text outside forbidden",
+          "digest": "include",
+          "routable": false,
+          "title": "Status Reason"
+        },
+        "tombstones": {
+          "default_semantics": "absent expands to empty array",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/TombstoneProbe"
+          },
+          "routable": false,
+          "title": "Tombstones",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "completeness"
+      ],
+      "title": "PageWireProbe",
+      "type": "object"
+    },
+    "TombstoneProbe": {
+      "additionalProperties": false,
+      "description": "合成控制载荷，只证明未知页面枚举不会使其在解码时丢失。",
+      "properties": {
+        "target": {
+          "default_semantics": "required; no authorization implied",
+          "digest": "include",
+          "routable": false,
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "title": "TombstoneProbe",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "仅用于编码与元数据实验，不提供 lease / complete 成功回执。",
+  "properties": {
+    "lease_generation": {
+      "default_semantics": "required; exact int64",
+      "digest": "include",
+      "maximum": 9223372036854775807,
+      "minimum": 0,
+      "routable": false,
+      "title": "Lease Generation",
+      "type": "integer"
+    },
+    "lease_token": {
+      "default_semantics": "required; probe credential only",
+      "digest": "exclude",
+      "routable": false,
+      "title": "Lease Token",
+      "type": "string"
+    },
+    "page": {
+      "$ref": "#/$defs/PageWireProbe",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "subjectseq": {
+      "default_semantics": "required; exact sequence encoded as string",
+      "digest": "include",
+      "routable": false,
+      "title": "Subjectseq",
+      "type": "string"
+    },
+    "tenant_id": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true,
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "subjectseq",
+    "lease_generation",
+    "lease_token",
+    "page"
+  ],
+  "title": "WorkerEnvelopeProbe",
+  "type": "object"
+}
