@@ -92,3 +92,7 @@ rtk proxy make infra-up
 单 broker 的 acks=all 只有单 ISR，不验证多副本/跨机容灾。单分区正常回调观察不能推广为跨分区全局顺序；乱序安全由六种独立 ACK 排列及前/中间失败反例覆盖。无真实外发箱、消费者 PG 去重、桶接管、网络外部副作用或模型数据。
 
 下一项按 roadmap 为 M0-02C RFC 8785/JCS 测试向量与选型。正式提交/发布需结合已有 PG 并发实验、契约、签名和回执实现，不把本原型当作完整 M0 硬判据证据。后续同模块迭代继续更新本文件。
+
+## 8. 合并证据（下一项开发开始时补录）
+
+PR #3 已于 2026-10-30 19:15（Asia/Shanghai）合并，merge SHA=`028eabe22f0d66df02684320d97eec4958f0b8fb`。最终提交 `7547247f7e0e1814bffc7059ddae65af11c04b91` 的 CI run `41046274072` 中 checks / infrastructure 均为 SUCCESS；合并后本地 main 干净，文件树与已通过 CI 的提交一致。

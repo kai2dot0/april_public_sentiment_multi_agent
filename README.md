@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架与 PG 并发验证，当前增加 **M0-02B Kafka 投递技术验证**：幂等配置、ACK 连续前沿、真实 ACK 丢失与重试实验。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架、PG 并发与 Kafka 投递验证，当前增加 **M0-02C JCS 规范化技术验证**：RFC 测试向量、严格输入边界与 SHA-256 原型。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -47,6 +47,16 @@ make infra-up
 测试用随机 topic 和合成消息验证：正常回调、broker 已写入后的 ACK 丢失、持续丢 ACK 的歧义超时、新生产者重发重复。客户端内部重试在幂等模式下去重，不代表应用按事件身份去重已实现；flush 剩余为 0 也不代表全部投递成功。方案见 [ADR 0003](docs/decisions/0003-kafka-delivery.md) 与 [开发记录](dev_memory/2026-10-30-m0-02b-kafka-delivery.md)。
 
 `TEST_KAFKA_BOOTSTRAP_SERVERS` 必须显式提供，不回退业务配置；代理端口默认 19093，修改 `.env` 中 `TEST_KAFKA_PROXY_PORT` 后测试进程也须导出同值。不并行运行共用相同 broker/端口的故障套件。原 `make test-integration` 仍运行数据库集成，Kafka 单独运行；CI 包含两者。
+
+## JCS 规范化验证
+
+```bash
+make test-jcs       # 离线重放 RFC 向量与输入边界；也包含在 make check 中
+```
+
+锁定 `rfc8785 0.1.4`，内部原型输出 JCS UTF-8 字节与完整输入值的 SHA-256。对象键递归按 UTF-16 排序，数组顺序和 Unicode 形式保留；严格文本入口拒绝重复键、非法 Unicode、非有限数值与非 UTF-8 编码。
+
+Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。当前未实现语义包字段投影、签名、证据身份或回执。方案与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
 
 ## 可观测开发环境
 
