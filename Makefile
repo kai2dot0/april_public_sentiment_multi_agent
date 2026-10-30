@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-integration test-pg-concurrency lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -26,17 +26,25 @@ test:
 
 # 必须显式设置 TEST_DATABASE_URL；缺少配置将失败，不能以跳过冒充验证。
 test-integration:
-	uv run --locked pytest -m integration
+	uv run --locked pytest -m "integration and not kafka"
 
 # 运行真实 PG 并发技术验证；使用与集成测试相同的显式测试库配置。
 test-pg-concurrency:
 	uv run --locked pytest -m postgres_concurrency
+
+# Kafka 实验独立执行；必须显式指向已启用测试代理拓扑的可丢弃 broker。
+test-kafka:
+	uv run --locked pytest -m kafka
+
+kafka-test-up:
+	docker compose -f compose.yaml -f deploy/kafka-fault-test.yaml up -d --wait --wait-timeout 180 kafka
 
 api:
 	uv run --locked uvicorn apps.api.main:create_app --factory --host 127.0.0.1 --port 8000
 
 compose-check:
 	docker compose --env-file .env.example --profile observability config --quiet
+	docker compose --env-file .env.example -f compose.yaml -f deploy/kafka-fault-test.yaml config --quiet
 
 infra-up:
 	docker compose up -d --wait --wait-timeout 180

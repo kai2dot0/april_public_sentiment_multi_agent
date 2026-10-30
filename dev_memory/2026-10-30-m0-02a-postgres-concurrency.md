@@ -65,6 +65,8 @@
 
 交付 PR：[PR #2](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/2)。最终远端 CI、合并时间和 merge SHA 以该 PR 的 GitHub 记录为准；只在全部检查通过后合并，没有直接向 main 提交。实现提交为 `7e6b538`，后续提交仅关联记录或修复验证发现的问题。
 
+交付确认：PR #2 于 2026-10-30 18:39（Asia/Shanghai）合并，merge=`7b6f76d2f6bcf35219f7a2a35efc15707c15c0cf`。[最终 CI 41042121047](https://github.com/kai2dot0/april_public_sentiment_multi_agent/actions/runs/41042121047) 的 checks / infrastructure 均通过。本地 main 已快进且树与已验证 PR head 一致。下一模块记录见 `2026-10-30-m0-02b-kafka-delivery.md`。
+
 当前复用原 CI 的 `make test-integration` 自动运行新增 PG 用例，无新增工作流或测试框架。Make 增加 `test-pg-concurrency` 用于定向重放；pytest marker 在 pyproject 中登记，未引入依赖变化。
 
 ## 5. 核心文件与接手入口

@@ -44,6 +44,11 @@ jobs:
         env:
           TEST_DATABASE_URL: postgresql://april:april_local_only@127.0.0.1:15432/april
       - run: make smoke-infra
+      - run: make kafka-test-up
+      - run: make test-kafka
+        env:
+          TEST_KAFKA_BOOTSTRAP_SERVERS: 127.0.0.1:19092
+          TEST_KAFKA_PROXY_PORT: "19093"
       - run: make observability-up
       - run: make smoke-observability
       - name: Show infrastructure logs on failure
