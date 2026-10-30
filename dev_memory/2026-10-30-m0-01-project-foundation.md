@@ -83,7 +83,9 @@
 - 新增 Python 文件语法及所有新增代码/配置顶部 AI header 检查通过；原 hld 文档未修改。
 - 临时随机本机端口真实启动 uvicorn 并请求 `/health/live`：通过；验证后已关闭该临时 API。
 
-远端 PR / CI / merge 状态：创建 PR 后回填实际地址；尚未宣告远端 CI 或合并成功。
+远端 PR / CI / merge 状态：当前被 GitHub 凭据权限阻塞。功能分支首个本地提交为 `46a25f7`；推送被 GitHub 拒绝，原因是仓库所有者 OAuth 令牌没有 `workflow` scope，无法新增 `.github/workflows/ci.yml`。未创建 PR，未运行远端 CI，也未合并；没有直接向 main 提交。
+
+已检查现有 SSH 路径：22 端口连接关闭；443 路径缺少已信任的主机密钥，保持 strict 校验，未新增密钥或 known_hosts。已请求用户为 kai2dot0 执行 `gh auth refresh --hostname github.com --scopes workflow`（需先切换至该账号，完成后可切回原默认账号）。授权完成后只需推送现有分支、创建 PR，回填链接并等待 CI 后 merge；不要删除 CI 文件来绕过权限要求。
 
 ## 6. 接手开发顺序
 
@@ -98,5 +100,5 @@
 
 - 未验证全部 HLD 硬判据、完整业务可靠性、真实 Jetstream/AppView、真实模型、负载与删除闭环；这些均在后续单元。
 - `TEST_DATABASE_URL` 必须是可丢弃专用库；当前测试会升级指定库，但不执行 downgrade 或删除业务数据。
-- 本机 smoke 后容器的保留/停止情况在交付前更新；本阶段不改变仓库 main 的保护设置。
+- 本机 smoke 后 7 个开发容器保留运行；临时 API 进程已退出。需要停止时执行 `make infra-down`，保留数据卷。本阶段不改变仓库 main 的保护设置。
 - 后续同功能修复请更新本文件；新模块新建自己的记录并补索引。
