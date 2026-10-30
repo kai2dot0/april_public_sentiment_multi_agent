@@ -92,6 +92,8 @@
 
 最终授权恢复：按用户明确要求，将本机 gh 默认账号切换为 kai2dot0，发起 workflow 设备授权，由用户在浏览器完成。CLI 返回 Authentication complete；GitHub `/user` 实测 login=kai2dot0，scopes=gist/read:org/repo/workflow。随后功能分支推送成功，已创建 [PR #1](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/1)。CI 的实际检查、最终合并状态和 merge SHA 以该 PR 的 GitHub 记录为准；只在远端检查通过后执行 PR merge。授权期间无凭据入库、无直接向 main 提交。本次交付仅 M0-01，不代表完整 M0 验收。
 
+交付确认：PR #1 最终在 2026-10-30 18:16（Asia/Shanghai）通过 squash merge 合并，main=`b6f64a98a3819db0ccf5e3b1b0f64a3cd00085f6`。[最终 PR CI 41039422134](https://github.com/kai2dot0/april_public_sentiment_multi_agent/actions/runs/41039422134) 的 checks / infrastructure 均通过；本地 main 快进同步且工作区干净。后续 PG 并发验证见 `2026-10-30-m0-02a-postgres-concurrency.md`。
+
 ## 6. 接手开发顺序
 
 1. 阅读 `README.md`、ADR 0001、`docs/rule-map/m0-foundation.md` 和 HLD 总册 §3 / §7.4 / §8。

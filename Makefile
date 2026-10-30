@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-integration lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-integration test-pg-concurrency lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -27,6 +27,10 @@ test:
 # 必须显式设置 TEST_DATABASE_URL；缺少配置将失败，不能以跳过冒充验证。
 test-integration:
 	uv run --locked pytest -m integration
+
+# 运行真实 PG 并发技术验证；使用与集成测试相同的显式测试库配置。
+test-pg-concurrency:
+	uv run --locked pytest -m postgres_concurrency
 
 api:
 	uv run --locked uvicorn apps.api.main:create_app --factory --host 127.0.0.1 --port 8000

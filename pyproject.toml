@@ -30,7 +30,10 @@ package = false
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra --strict-markers"
-markers = ["integration: requires an explicitly configured PostgreSQL database"]
+markers = [
+    "integration: requires an explicitly configured PostgreSQL database",
+    "postgres_concurrency: real PostgreSQL locking and transaction experiments",
+]
 
 [tool.importlinter]
 root_packages = ["contracts", "spi", "sdk", "agents", "connectors", "runtime", "capabilities", "adapters", "apps"]
