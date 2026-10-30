@@ -83,11 +83,13 @@
 - 新增 Python 文件语法及所有新增代码/配置顶部 AI header 检查通过；原 hld 文档未修改。
 - 临时随机本机端口真实启动 uvicorn 并请求 `/health/live`：通过；验证后已关闭该临时 API。
 
-远端 PR / CI / merge 状态：当前被 GitHub 凭据权限阻塞。功能分支首个本地提交为 `46a25f7`；推送被 GitHub 拒绝，原因是仓库所有者 OAuth 令牌没有 `workflow` scope，无法新增 `.github/workflows/ci.yml`。未创建 PR，未运行远端 CI，也未合并；没有直接向 main 提交。
+远端流程历史（权限阻塞现已解除）：功能分支首个本地提交为 `46a25f7`；最初推送被 GitHub 拒绝，原因是仓库所有者 OAuth 令牌没有 `workflow` scope，无法新增 `.github/workflows/ci.yml`。该次未创建 PR、未运行远端 CI、未合并；没有直接向 main 提交。
 
 已检查现有 SSH 路径：22 端口连接关闭；443 路径缺少已信任的主机密钥，保持 strict 校验，未新增密钥或 known_hosts。已请求用户为 kai2dot0 执行 `gh auth refresh --hostname github.com --scopes workflow`（需先切换至该账号，完成后可切回原默认账号）。授权完成后只需推送现有分支、创建 PR，回填链接并等待 CI 后 merge；不要删除 CI 文件来绕过权限要求。
 
-后续授权复查：用户回复已完成授权后重试推送，GitHub 仍以缺少 workflow 拒绝。通过 `/user` 返回的实际身份和 `X-OAuth-Scopes` 核对，kai2dot0 只有 gist/read:org/repo，kylechandev 有 workflow 但没有目标仓库写权限；已提醒浏览器授权身份也需为 kai2dot0。进一步从 GitHub 官方 HTTPS `/meta` 取得公开 SSH 主机密钥，仅写 `/private/tmp/april-github-known-hosts`，以 strict 校验检查 443 路径；主机验证成功，但现有身份被拒绝（publickey）。没有修改全局 SSH 配置。当前仍待正确账号的 workflow 授权，PR/远端 CI/merge 均未完成。
+后续授权复查：用户回复已完成授权后重试推送，GitHub 仍以缺少 workflow 拒绝。通过 `/user` 返回的实际身份和 `X-OAuth-Scopes` 核对，kai2dot0 只有 gist/read:org/repo，kylechandev 有 workflow 但没有目标仓库写权限；已提醒浏览器授权身份也需为 kai2dot0。进一步从 GitHub 官方 HTTPS `/meta` 取得公开 SSH 主机密钥，仅写 `/private/tmp/april-github-known-hosts`，以 strict 校验检查 443 路径；主机验证成功，但现有身份被拒绝（publickey）。没有修改全局 SSH 配置；当时 PR/远端 CI/merge 均未完成。
+
+最终授权恢复：按用户明确要求，将本机 gh 默认账号切换为 kai2dot0，发起 workflow 设备授权，由用户在浏览器完成。CLI 返回 Authentication complete；GitHub `/user` 实测 login=kai2dot0，scopes=gist/read:org/repo/workflow。随后功能分支推送成功，已创建 [PR #1](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/1)。CI 的实际检查、最终合并状态和 merge SHA 以该 PR 的 GitHub 记录为准；只在远端检查通过后执行 PR merge。授权期间无凭据入库、无直接向 main 提交。本次交付仅 M0-01，不代表完整 M0 验收。
 
 ## 6. 接手开发顺序
 
