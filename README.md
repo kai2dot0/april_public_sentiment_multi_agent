@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架、PG 并发与 Kafka 投递验证，当前增加 **M0-02C JCS 规范化技术验证**：RFC 测试向量、严格输入边界与 SHA-256 原型。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架、PG / Kafka / JCS 验证，当前增加 **M0-02D CEL 技术验证**：受限函数、输入限额、真实求值超时与进程回收。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -57,6 +57,16 @@ make test-jcs       # 离线重放 RFC 向量与输入边界；也包含在 make
 锁定 `rfc8785 0.1.4`，内部原型输出 JCS UTF-8 字节与完整输入值的 SHA-256。对象键递归按 UTF-16 排序，数组顺序和 Unicode 形式保留；严格文本入口拒绝重复键、非法 Unicode、非有限数值与非 UTF-8 编码。
 
 Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。当前未实现语义包字段投影、签名、证据身份或回执。方案与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
+
+## CEL 规则验证
+
+```bash
+make test-cel       # 离线运行子集、准入与真实子进程超时测试；也包含在 make check
+```
+
+内部 `evaluate_rule(expression, facts)` 使用锁定的 `common-expression-language 0.10.0`。表达式通过 stdin 进入独立进程，求值前检查完整函数引用；只返回 bool，语法、类型和超时错误单独报错。现阶段限制 4096 字节表达式、每输入集合 128 项和 64 KiB 请求，缺省 2 秒截止时间，超时 kill 并回收。
+
+本轮选择 HLD 允许的超时方案；没有精确操作成本或硬内存上限，也未完成 OS 沙箱。候选比较、完整预算与边界见 [ADR 0005](docs/decisions/0005-cel-subset.md) 和 [开发记录](dev_memory/2026-10-30-m0-02d-cel-subset.md)。领域包规则表、执行配置锁和 risk-grader 按路线图在 M1 接入。
 
 ## 可观测开发环境
 

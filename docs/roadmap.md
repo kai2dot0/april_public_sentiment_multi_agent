@@ -5,7 +5,7 @@
 | 单元 | 范围 | 验收 / 状态 |
 | --- | --- | --- |
 | M0-01 | 工程目录、依赖锁、API 存活、基础设施、迁移链与基础 CI | 已通过 [PR #1](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/1) 合并；不表示 M0 出口 |
-| M0-02 | 第 1 周技术验证：PG 锁/守卫/屏障、Kafka 幂等与 ACK、JCS、CEL、进程隔离原型、协议核实 | 按下表独立交付；PG / Kafka 已合并，本轮实现 JCS，其他项待开发 |
+| M0-02 | 第 1 周技术验证：PG 锁/守卫/屏障、Kafka 幂等与 ACK、JCS、CEL、进程隔离原型、协议核实 | 按下表独立交付；PG / Kafka / JCS 已合并，本轮实现 CEL，其他项待开发 |
 | M0-03 | 第 1 批契约：执行上下文、传输、FetchPage/条目结果、错误、ID 派生输入 | 待冻结并实现；双方接口一致 |
 | M0-04 | 第 2 批契约：结果包/摘要、完整提交、事务上下文、控制对象与锁、状态服务 | 待冻结并实现；事务与权限语义明确 |
 | M0-05 | 最小运行时、SDK、文件连接器、证据 API、I5/I7/I21 最小真实适配器、注册 Fake | 待开发；总册 §8.2 集成点 1：文件一页 → 提交 → 检查点 → 事件；不依赖 I9 |
@@ -22,8 +22,8 @@
 | --- | --- | --- |
 | M0-02A | PG 行锁 16 对、SKIP LOCKED、SET LOCAL、Read Committed、死锁/整事务重试、守卫与命名屏障 | 已通过 [PR #2](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/2) 合并 |
 | M0-02B | Kafka 幂等生产者配置、ACK、重试与确认行为 | 已通过 [PR #3](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/3) 合并 |
-| M0-02C | RFC 8785/JCS 候选与测试向量 | 本轮实现：[PR #4](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/4)，结果见对应 dev_memory、ADR 0004 与 PR CI |
-| M0-02D | CEL 子集与成本/超时约束 | 待开发 |
+| M0-02C | RFC 8785/JCS 候选与测试向量 | 已通过 [PR #4](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/4) 合并 |
+| M0-02D | CEL 子集与成本/超时约束 | 本轮实现：[PR #5](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/5)，见对应 dev_memory、ADR 0005 与 PR CI |
 | M0-02E | Pydantic/schema/digest 元数据、未知枚举、Worker 传输形态、穷举规模验证 | 待开发，最终与契约冻结对齐 |
 | M0-02F | 进程组、cgroup、网络与缓存清理原型 | 待开发 |
 | M0-02G | Jetstream/AppView 协议、游标、缓存与许可核实 | 待核实，不以设计文字代替实际来源证据 |
