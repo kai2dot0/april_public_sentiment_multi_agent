@@ -104,3 +104,7 @@ rtk proxy env UV_CACHE_DIR=.cache/uv UV_PYTHON_INSTALL_DIR=.cache/python uv run 
 完整 H11 必须补真实 18 行 / 19 条 YAML 与同一判定纯函数，逐组合输出 verdict / 全部违规码 / primary / 匹配行数 / 最终动作，并对排除项提供构造断言；本次只有维度成本基线。schema diff 也不能替代 validator 语义兼容测试、控制鉴权和事务验收。
 
 当前可撤销工具 / 探针 / 快照、Make / CI 和文档入口回退，无业务数据清理，无 SDK 兼容迁移。后续有实际跨组调用和持久数据后必须按兼容变更处理；不能禁用 schema 检查或改为静默丢字段来规避失败。
+
+## 8. 合并证据（下一项开始时补录）
+
+PR #6 已于 2026-10-30 22:58（Asia/Shanghai）合并，merge SHA=`2b05440d5b0248b36472e3b849a90442873865ae`。最终提交 `5ba7d40b14e71f09bf813eb257b65ed8664abfce` 的 CI run `41076041357` 中 checks / infrastructure 均 SUCCESS；远端 340 项通过，Linux 扫描 0.767 秒、计数和有序 profile digest 与本地一致。合并后本地 main 干净，文件树与已检查提交一致。

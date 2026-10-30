@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架及 PG / Kafka / JCS / CEL 验证，当前增加 **M0-02E 契约工具链验证**：schema 漂移门禁、未知枚举、真实 HTTP/JSON 往返与组合规模扫描。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架及 PG / Kafka / JCS / CEL / 契约工具链验证，当前增加 **M0-02F worker 隔离验证**：真实 cgroup OOM、角色网络策略、整树终止和缓存清理核验。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -81,6 +81,19 @@ make measure-contract-matrix # 全量维度扫描和耗时；不是 H11 业务�
 未知枚举保持原始字符串，墓碑载荷经真实 HTTP 往返仍保留；重复键、非法编码和结构损坏明确失败。探针端点仅在测试 app，正式 API 不开放它。完整 FetchPage、控制提交和签名按后续阶段实现。
 
 当前维度轮廓全量 3,317,760 个组合，显式排除后扫描 2,488,320 个；耗时只含扫描和未知值检查，不代表完整决策表。方案、数值域发现及 CI 策略见 [ADR 0006](docs/decisions/0006-contract-toolchain.md)、[实测记录](docs/validation/m0-02e-matrix-scan.json) 和 [dev_memory](dev_memory/2026-10-30-m0-02e-contract-toolchain.md)。
+
+## worker 隔离验证
+
+只对专用、可丢弃的开发 Docker Engine 执行；要求 Linux cgroup v2（Docker Desktop 使用其 Linux VM），会创建独立合成容器 / 卷 / internal 网络，不挂载现有项目卷，也不改宿主防火墙：
+
+```bash
+make isolation-build
+TEST_ISOLATION_ENABLED=1 make test-isolation
+```
+
+采用每 worker 独立受限容器的替代原型，可信控制端通过 Docker 管理其 cgroup；worker 无 Docker socket / 数据库凭据。一次性 NET_ADMIN helper 仅在该 worker 私有 netns 安装规则，host / 非内部网络在准入时拒绝。真实测试包含 OOM、忽略 TERM / setsid 后代终止、活端点网络正反例、只读根 / tmpfs 与缓存不可核对负例。清理只针对本次所有者标签匹配的资源，不用全局 prune。
+
+缺少开关、cgroup v2 或所需内核能力时明确失败，不跳过。`make test-integration` 仍只跑 PG，隔离套件单独执行并由专用 CI job 验证。替代方案、端口表和控制面边界见 [ADR 0007](docs/decisions/0007-worker-isolation.md) 与 [dev_memory](dev_memory/2026-10-30-m0-02f-worker-isolation.md)。本轮输出仅为本地清理证据，不代表登记服务退役、fencing 或真实任务重派已实现。
 
 ## 可观测开发环境
 
