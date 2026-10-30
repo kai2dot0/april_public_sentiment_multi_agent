@@ -88,7 +88,7 @@ rtk proxy make check
 
 缺少显式开关 / Docker / cgroup v2 / 所需内核能力会失败，不跳过。Make 的 test-integration 明确排除 kafka / isolation，保持 PG 入口含义。独立 CI isolation job 按 build → test 顺序运行；checks / infrastructure 两个原 job 继续执行所有门禁。合并必须三项均通过，不能只看原两项。
 
-设计见 ADR 0007，规则映射 `docs/rule-map/m0-worker-isolation.md`，入口 README / roadmap / memory索引已更新；上一模块 memory 补 PR #6 最终合并证据。交付 PR 创建后补链接，最终 CI / merge SHA以PR记录为准，不把未执行项记为通过。
+设计见 ADR 0007，规则映射 `docs/rule-map/m0-worker-isolation.md`，入口 README / roadmap / memory索引已更新；上一模块 memory 补 PR #6 最终合并证据。交付 [PR #7](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/7)，实现提交 `4541398`；最终提交的三项 CI / merge SHA / 合并状态以PR记录为准，全部检查通过后才合并，不把未执行项记为通过。
 
 ## 8. 接手、限制与回退
 
