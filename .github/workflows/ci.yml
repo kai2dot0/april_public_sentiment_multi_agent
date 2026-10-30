@@ -11,6 +11,23 @@ permissions:
   contents: read
 
 jobs:
+  isolation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.21"
+      - run: make setup
+      - run: make isolation-build
+      - run: make test-isolation
+        env:
+          TEST_ISOLATION_ENABLED: "1"
+
   checks:
     runs-on: ubuntu-latest
     timeout-minutes: 10

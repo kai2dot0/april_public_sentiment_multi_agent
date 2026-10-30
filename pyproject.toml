@@ -34,9 +34,10 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra --strict-markers"
 markers = [
-    "integration: requires an explicitly configured PostgreSQL database",
+    "integration: requires explicitly configured disposable infrastructure",
     "postgres_concurrency: real PostgreSQL locking and transaction experiments",
     "kafka: real Kafka delivery and retry experiments on a disposable test broker",
+    "isolation: real Docker cgroup v2, private network fences and dedicated cache experiments",
 ]
 
 [tool.importlinter]

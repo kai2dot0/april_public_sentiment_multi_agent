@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-jcs test-cel test-contract-toolchain schema-check schema-write measure-contract-matrix test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-jcs test-cel test-contract-toolchain schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -48,7 +48,15 @@ measure-contract-matrix:
 
 # 必须显式设置 TEST_DATABASE_URL；缺少配置将失败，不能以跳过冒充验证。
 test-integration:
-	uv run --locked pytest -m "integration and not kafka"
+	uv run --locked pytest -m "integration and not kafka and not isolation"
+
+# 隔离试验使用独立镜像和临时网络，不改变本项目基础设施拓扑。
+isolation-build:
+	docker build --tag april-isolation-probe:m0-02f deploy/isolation
+
+# 必须显式 TEST_ISOLATION_ENABLED=1；cgroup v2 / Docker 缺失时失败，不跳过。
+test-isolation:
+	uv run --locked pytest -m isolation
 
 # 运行真实 PG 并发技术验证；使用与集成测试相同的显式测试库配置。
 test-pg-concurrency:
