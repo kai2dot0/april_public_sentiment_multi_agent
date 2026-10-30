@@ -1,0 +1,66 @@
+{
+  "scope": "manual_metadata_only_not_source_qualification",
+  "started_at": "2026-10-30T15:59:37.481652+00:00",
+  "jetstream": [
+    {
+      "endpoint": "wss://jetstream.us-east.bsky.network/xrpc/network.bsky.jetstream.subscribeEvents",
+      "version": "v2",
+      "cursor_test": 1,
+      "deployed_commit": "unknown",
+      "caught_up": "unknown",
+      "http_status": 400,
+      "error_code": "CursorTooOld"
+    },
+    {
+      "endpoint": "wss://jetstream.us-east.bsky.network/xrpc/network.bsky.jetstream.subscribeEvents",
+      "version": "v2",
+      "cursor_test": 999999999999999,
+      "deployed_commit": "unknown",
+      "caught_up": "unknown",
+      "http_status": 101,
+      "subprotocol": "xrpc.v1.json",
+      "first_disposition": "invalid_job",
+      "first_has_position": false
+    },
+    {
+      "endpoint": "wss://jetstream.us-west.bsky.network/xrpc/network.bsky.jetstream.subscribeEvents",
+      "version": "v2",
+      "cursor_test": 1000000000000000,
+      "deployed_commit": "unknown",
+      "caught_up": "unknown",
+      "http_status": 101,
+      "subprotocol": "xrpc.v1.json",
+      "first_disposition": "cursor_expired",
+      "first_has_position": false
+    },
+    {
+      "endpoint": "wss://jetstream2.us-east.bsky.network/subscribe",
+      "version": "v1",
+      "cursor_test": null,
+      "deployed_commit": "unknown",
+      "caught_up": "unknown",
+      "http_status": 101,
+      "subprotocol": null
+    }
+  ],
+  "appview": [
+    {
+      "endpoint": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts",
+      "requested": 25,
+      "freshness_lower_bound": "unknown",
+      "http_status": 200,
+      "headers": {"date": "Fri, 30 Oct 2026 15:59:41 GMT", "cache-control": "public, max-age=30"},
+      "returned": 0,
+      "unresolved": 25,
+      "deletion_confirmed": false
+    },
+    {
+      "endpoint": "https://public.api.bsky.app/xrpc/app.bsky.feed.getPosts",
+      "requested": 26,
+      "freshness_lower_bound": "unknown",
+      "http_status": 400,
+      "headers": {"date": "Fri, 30 Oct 2026 15:59:42 GMT", "cache-control": "public, max-age=5"}
+    }
+  ],
+  "completed_at": "2026-10-30T15:59:42.346342+00:00"
+}

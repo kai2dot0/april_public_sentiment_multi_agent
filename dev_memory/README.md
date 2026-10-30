@@ -11,3 +11,4 @@
 | [2026-10-30-m0-02d-cel-subset.md](2026-10-30-m0-02d-cel-subset.md) | CEL 选型反例、函数子集、输入规模、真实超时回收与后续领域包接入 |
 | [2026-10-30-m0-02e-contract-toolchain.md](2026-10-30-m0-02e-contract-toolchain.md) | schema / 字段元数据、开放枚举、真实 HTTP/JSON、有限维度扫描与契约冻结接手 |
 | [2026-10-30-m0-02f-worker-isolation.md](2026-10-30-m0-02f-worker-isolation.md) | cgroup 替代方案、四角色内核网络、OOM / 整树终止、缓存清理与控制面接手 |
+| [2026-10-30-m0-02g-source-protocol.md](2026-10-30-m0-02g-source-protocol.md) | Jetstream 两代协议、实例游标、真实 WS 恢复、AppView 缓存与许可证据、未知保证及后续接线 |

@@ -95,6 +95,17 @@ TEST_ISOLATION_ENABLED=1 make test-isolation
 
 缺少开关、cgroup v2 或所需内核能力时明确失败，不跳过。`make test-integration` 仍只跑 PG，隔离套件单独执行并由专用 CI job 验证。替代方案、端口表和控制面边界见 [ADR 0007](docs/decisions/0007-worker-isolation.md) 与 [dev_memory](dev_memory/2026-10-30-m0-02f-worker-isolation.md)。本轮输出仅为本地清理证据，不代表登记服务退役、fencing 或真实任务重派已实现。
 
+## 来源协议核实
+
+```bash
+make test-source-protocol   # 离线回归，真实 loopback WebSocket；已纳入 make check
+make probe-source-metadata # 显式访问固定官方端点，只用虚构 DID / URI，输出状态与计数
+```
+
+后续来源开发选 Jetstream v2 的实例内 seq；v1 时间游标、嵌套 relay.seq 和其他实例不能混用。探针验证旧游标 / 未来游标的停止映射、inclusive 重复恢复、account / sync 分类、AppView 25 URI 上限与缺项处理。它不是正式连接器或受控传输服务；默认 CI 不访问公网。
+
+公网实测、固定源码摘要和来源许可边界见 [ADR 0008](docs/decisions/0008-source-protocol-verification.md)、[核实登记表](docs/rule-map/m0-source-protocol.md) 与 [dev_memory](dev_memory/2026-10-30-m0-02g-source-protocol.md)。控制事件投递上界、caught-up 证明和 AppView 索引新鲜度下界仍 unknown；接收时间证明关闭，真实采集未启用，公开接口 / 软件许可证不代替内容和模型用途许可。
+
 ## 可观测开发环境
 
 ```bash

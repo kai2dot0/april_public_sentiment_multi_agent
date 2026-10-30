@@ -92,6 +92,8 @@ rtk proxy make check
 
 ## 8. 接手、限制与回退
 
+合并补记（M0-02G 开工时核对）：PR #7 已于 2026-10-30 15:50:32 UTC 合并，merge SHA `615fdebf5e64e78928581b6b83752827b566c86b`；实际受检 head `0b7f5fcd544ac6c05b47162a920980f20d7b14d0` 的 CI run `41083914889` 中 checks / infrastructure / isolation 三项均 SUCCESS。main 已快进同步且树等于受检 head；不是仅凭本地结果合并。
+
 先读本 memory / ADR，然后 adapter 的准入与所有权、deploy 探针 / 角色表、IsolationLab 和10项真实测试，再读13项unit与CI。六个新 Python 和 Dockerfile 顶部有 AI header，JSON不加注释，函数均有说明。
 
 下一项为 M0-02G：Jetstream / AppView 协议、游标、缓存与许可核实。正式阶段接本隔离原型时，须保持不可变实例身份与标签、策略先于任务、插件无控制端权限、资源限制与停止 / 缓存核对分离，并实现任务 / lease 绑定、fencing fail、控制面持久恢复和真实 report_retired。普通 cgroup 内委派未验证成功，不应回改为可写宿主 cgroup；若更换部署方案须重新做真实验收。

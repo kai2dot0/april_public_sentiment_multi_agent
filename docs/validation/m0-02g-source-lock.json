@@ -1,0 +1,156 @@
+{
+  "scope": "M0-02G research and synthetic probes, not a ConnectorManifest or S2 qualification",
+  "selected_protocol": "v2",
+  "enabled_for_collection": false,
+  "selection": "east primary candidate; west requires explicit handoff; v1 compatibility evidence only",
+  "endpoints": {
+    "v2": [
+      "wss://jetstream.us-east.bsky.network/xrpc/network.bsky.jetstream.subscribeEvents",
+      "wss://jetstream.us-west.bsky.network/xrpc/network.bsky.jetstream.subscribeEvents"
+    ],
+    "v1": [
+      "wss://jetstream2.us-east.bsky.network/subscribe",
+      "wss://jetstream1.us-west.bsky.network/subscribe"
+    ]
+  },
+  "deployed_commit": "unknown",
+  "retention_window": "instance_configured_unverified",
+  "resume_semantics": "inclusive_at_least_once_source_evidence_only",
+  "caught_up_criterion": "unknown",
+  "control_delivery_bound": "unknown",
+  "appview_freshness_lower_bound": "unknown",
+  "appview_public_numeric_rate_limit": "unknown",
+  "reception_time_proof_enabled": false,
+  "license_status": "public access documented; no blanket content/model/redistribution grant established",
+  "sources": [
+    {
+      "id": "jetstream-v2-lexicon",
+      "url": "https://raw.githubusercontent.com/bluesky-social/jetstream/c9cbd1b3e6604b27bcb32cad08801b9806d4705a/lexicons/network/bsky/jetstream/subscribeEvents.json",
+      "sha256": "4624b116e9dabe32ba9dce867f6a9450584ea6b6629eb4af609943bccc507d54",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "jetstream-cursor",
+      "url": "https://raw.githubusercontent.com/bluesky-social/jetstream/c9cbd1b3e6604b27bcb32cad08801b9806d4705a/internal/subscribe/cursor.go",
+      "sha256": "1edcf1c49d06efec26b67032c916848a8a258313671dcb03e68fc24201b4f506",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "jetstream-encoder",
+      "url": "https://raw.githubusercontent.com/bluesky-social/jetstream/c9cbd1b3e6604b27bcb32cad08801b9806d4705a/internal/subscribe/encoder.go",
+      "sha256": "c113c7d6b0cc09615711770c12c058ea06db13e273b63c51d01b776e0594e331",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "getPosts-lexicon",
+      "url": "https://raw.githubusercontent.com/bluesky-social/atproto/a2dd244d6072216735198db5777909d014b0638e/packages/bsky/lexicons/app/bsky/feed/getPosts.json",
+      "sha256": "57686e954fe1d7848ccdeb2ca74d24d14a2a1b82a06e1f892a9e73cc7fed0184",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "account-lexicon",
+      "url": "https://raw.githubusercontent.com/bluesky-social/atproto/a2dd244d6072216735198db5777909d014b0638e/lexicons/com/atproto/sync/subscribeRepos.json",
+      "sha256": "bfc3e22bfeae701736fbbbd68a56f0b4b8b66ef4e0e10f1c281b2de61c3328ae",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "bps-jetstream.mdx",
+      "url": "https://raw.githubusercontent.com/bluesky-social/bps-website/8a8a57d9df74b7a1eccbc58ac778609422da1e14/docs/jetstream.mdx",
+      "sha256": "fc5a58b3d9f6d9f279dbc9bfff92584575895b0d33f20366b495cd484d1142ed",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "bps-rate-limits.md",
+      "url": "https://raw.githubusercontent.com/bluesky-social/bps-website/8a8a57d9df74b7a1eccbc58ac778609422da1e14/docs/rate-limits.md",
+      "sha256": "ba91df3b3bc93bee2757aa8ca64529b40b5549e03f1f13bf4fae61d28c9d7483",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "bps-developer-guidelines.md",
+      "url": "https://raw.githubusercontent.com/bluesky-social/bps-website/8a8a57d9df74b7a1eccbc58ac778609422da1e14/docs/developer-guidelines.md",
+      "sha256": "afb967638e4c4b0e650298de4ea5c50fe73a19aa111977b58f10ef16fdf33c3d",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "legacy-readme",
+      "url": "https://raw.githubusercontent.com/bluesky-social/jetstream-legacy/8a65de4eda28bed1cafcbcf25b0cd46ac6f2148b/README.md",
+      "sha256": "151afa3d35e6767e4c95526d9b0502dfbe3b348730ecf61153b7eeb0a1ce8d94",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    },
+    {
+      "id": "jetstream-software-license",
+      "url": "https://raw.githubusercontent.com/bluesky-social/jetstream/c9cbd1b3e6604b27bcb32cad08801b9806d4705a/LICENSE-DUAL",
+      "sha256": "f10b687a9d63462cabec80c5ce4889e6372a855e77ead75b02ad318003b12cbe",
+      "reviewed_dates_asia_shanghai": [
+        "2026-10-30",
+        "2026-10-31"
+      ]
+    }
+  ],
+  "web_review_only": [
+    {
+      "url": "https://bsky.social/about/support/tos",
+      "document_updated": "2025-08-14",
+      "reviewed_date": "2026-10-30",
+      "sha256": null,
+      "note": "Read with browser search tool; direct HTTP retrieval returned 403, no byte snapshot claimed"
+    },
+    {
+      "url": "https://bsky.social/about/support/network-services-privacy-policy",
+      "document_updated": "2024-05-22",
+      "reviewed_date": "2026-10-30",
+      "sha256": null,
+      "note": "Read with browser search tool, no byte snapshot claimed"
+    }
+  ],
+  "rss_precheck": {
+    "checked_at": "2026-10-30T16:01:02Z",
+    "robots": {
+      "url": "https://www.stats.gov.cn/robots.txt",
+      "status": 404,
+      "meaning": "no robots rules retrieved; not a content-use grant"
+    },
+    "feed_head": [
+      {
+        "url": "https://www.stats.gov.cn/sj/zxfb/rss.xml",
+        "status": 200,
+        "content_type": "text/xml"
+      },
+      {
+        "url": "https://www.stats.gov.cn/sj/sjjd/rss.xml",
+        "status": 200,
+        "content_type": "text/xml"
+      }
+    ],
+    "enabled_for_collection": false,
+    "policy_url": "https://www.stats.gov.cn/wzgl/202302/t20230217_1912857.html",
+    "policy_review_method": "web tool only; no byte snapshot claimed"
+  }
+}
