@@ -64,7 +64,9 @@
 - `make test-integration`：原 24 项真实 PG 用例仍通过；总收集 118 项（89 单元 + 24 PG + 5 Kafka）。
 - `make compose-check`：普通与故障 override 配置均通过。
 - 实验后元数据只读检查：临时测试 topic 剩余 0；默认开发 advertised 端口已恢复为 19092，core 服务 healthy。
-- 新增 6 个 Python 文件及故障 YAML 的 header / Python 语法检查通过；PR 创建后回填链接，全部远端检查通过再合并。
+- 新增 6 个 Python 文件及故障 YAML 的 header / Python 语法、git diff --check 均通过。
+
+交付 PR：[PR #3](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/3)。实现提交 `a70e4e5`，最终 CI、合并状态和 merge SHA 以该 PR 的 GitHub 记录为准；全部检查通过后才合并，无直接向 main 提交。
 
 ## 6. CI、命令与接手
 
