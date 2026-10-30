@@ -54,7 +54,7 @@ Unicode 不做 NFC / NFD 归一化；字面量与转义后的相同键视为重�
 - `make check`：177 passed、29 个集成用例按 marker 排除；8 条 import-linter 契约保留、连接器导入、迁移链 1 revision 和 uv 锁文件检查均通过。总收集 206 项。
 - 新增 2 个 Python 文件的 AI header、日期格式、函数 docstring 和 AST 语法检查通过；`git diff --check` 通过。
 
-本轮不修改基础设施 / 数据库路径，未重复运行本地 Kafka 故障拓扑或 PG 集成；远端现有 CI 仍必须执行完整 PG / Kafka / observability 门禁，最终状态以本 PR 的 CI 为准。交付 PR 链接与最终验证见本节后续补充；未执行的检查不记录为通过。
+本轮不修改基础设施 / 数据库路径，未重复运行本地 Kafka 故障拓扑或 PG 集成；远端现有 CI 仍必须执行完整 PG / Kafka / observability 门禁。交付 [PR #4](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/4)，实现提交 `20dfb56`；最终 CI、合并状态和 merge SHA 以该 PR 的 GitHub 记录为准，全部检查通过后才合并。未执行的检查不记录为通过。
 
 ## 6. 复现与后续接手
 
