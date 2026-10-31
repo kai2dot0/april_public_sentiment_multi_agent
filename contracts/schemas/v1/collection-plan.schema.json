@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "采集计划的第一批准入字段；不是完整作业 / Manifest / 执行配置锁。",
+  "properties": {
+    "connector_name": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "continuity": {
+      "default": "best_effort",
+      "default_semantics": "absent means best effort; gaps still require explicit handling",
+      "digest": "include",
+      "enum": [
+        "required",
+        "best_effort"
+      ],
+      "routable": false,
+      "title": "Continuity",
+      "type": "string"
+    },
+    "environment": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "test",
+        "development",
+        "target"
+      ],
+      "routable": false,
+      "title": "Environment",
+      "type": "string"
+    },
+    "execution_form": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "bounded_slice",
+        "long_session"
+      ],
+      "routable": false,
+      "title": "Execution Form",
+      "type": "string"
+    },
+    "fetch_mode": {
+      "default": "incremental",
+      "default_semantics": "absent means incremental collection; probe is not enabled in Demo",
+      "digest": "include",
+      "enum": [
+        "incremental",
+        "history",
+        "revisit"
+      ],
+      "routable": false,
+      "title": "Fetch Mode",
+      "type": "string"
+    },
+    "schedule": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "periodic",
+        "continuous"
+      ],
+      "routable": false,
+      "title": "Schedule",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schedule",
+    "execution_form",
+    "connector_name",
+    "environment"
+  ],
+  "title": "CollectionPlan",
+  "type": "object"
+}

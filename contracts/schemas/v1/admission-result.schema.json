@@ -1,0 +1,75 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "permit 代表 PG 短事务已提交；deny 不带任何网络访问资格。",
+  "properties": {
+    "decision": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "permit",
+        "deny"
+      ],
+      "routable": false,
+      "title": "Decision",
+      "type": "string"
+    },
+    "permit_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent unless an authoritative permit was issued",
+      "digest": "include",
+      "routable": false
+    },
+    "reason": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "allowed",
+        "rate_limited",
+        "policy_denied"
+      ],
+      "routable": false,
+      "title": "Reason",
+      "type": "string"
+    },
+    "retry_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no known retry wall time",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "decision",
+    "reason"
+  ],
+  "title": "AdmissionResult",
+  "type": "object"
+}

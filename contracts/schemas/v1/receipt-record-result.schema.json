@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "放弃登记以 unregistered 返回，不能伪造成功或使采集停摆。",
+  "properties": {
+    "first_catching_up": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means earliest receipt catch-up state is unknown",
+      "digest": "include",
+      "routable": false,
+      "title": "First Catching Up"
+    },
+    "first_received_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no established first receipt time",
+      "digest": "include",
+      "routable": false
+    },
+    "receipt_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent when no durable receipt exists",
+      "digest": "include",
+      "routable": false
+    },
+    "status": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "recorded",
+        "unregistered"
+      ],
+      "routable": false,
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status"
+  ],
+  "title": "ReceiptRecordResult",
+  "type": "object"
+}

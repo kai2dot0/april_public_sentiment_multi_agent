@@ -1,0 +1,58 @@
+{
+  "$defs": {
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "显式有界切片预算；重试与首次请求共享这些余额。",
+  "properties": {
+    "max_decompressed_bytes": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "max_messages": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "max_pages": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "max_requests": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "wall_timeout_ms": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "max_requests",
+    "max_messages",
+    "max_decompressed_bytes",
+    "wall_timeout_ms",
+    "max_pages"
+  ],
+  "title": "FetchBudget",
+  "type": "object"
+}

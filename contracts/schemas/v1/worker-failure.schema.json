@@ -1,0 +1,55 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "尚未形成 FetchPage 的执行失败；不携带异常原文或进入页面动作表。",
+  "properties": {
+    "diagnostic_code": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no sanitized diagnostic code",
+      "digest": "include",
+      "routable": false
+    },
+    "error_class": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "input_withdrawn": {
+      "default": false,
+      "default_semantics": "absent means not classified as withdrawn input",
+      "digest": "include",
+      "routable": false,
+      "title": "Input Withdrawn",
+      "type": "boolean"
+    },
+    "retryable": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Retryable",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "error_class",
+    "retryable"
+  ],
+  "title": "WorkerFailure",
+  "type": "object"
+}

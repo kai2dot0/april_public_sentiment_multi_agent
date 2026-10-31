@@ -1,0 +1,40 @@
+{
+  "$defs": {
+    "ControlledUrl": {
+      "maxLength": 8192,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "打开订阅所需参数；真正接收必须在连接登记成功以后开始。",
+  "properties": {
+    "subprotocols": {
+      "default_semantics": "absent means no offered subprotocol",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Subprotocols",
+      "type": "array"
+    },
+    "url": {
+      "$ref": "#/$defs/ControlledUrl",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "url"
+  ],
+  "title": "WebSocketOpen",
+  "type": "object"
+}

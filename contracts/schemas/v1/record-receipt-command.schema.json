@@ -1,0 +1,32 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "连接器公开调用只允许这两个参数，任何接收时间字段都是结构错误。",
+  "properties": {
+    "frame_ref": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "upstream_event_identity": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "frame_ref",
+    "upstream_event_identity"
+  ],
+  "title": "RecordReceiptCommand",
+  "type": "object"
+}

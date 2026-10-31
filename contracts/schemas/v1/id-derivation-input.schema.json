@@ -1,0 +1,56 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "每种输出类型独立使用从零开始的局部索引，段号从一开始。",
+  "properties": {
+    "local_output_index": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "output_kind": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "segment_no": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "task_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "task_id",
+    "segment_no",
+    "output_kind",
+    "local_output_index"
+  ],
+  "title": "IdDerivationInput",
+  "type": "object"
+}

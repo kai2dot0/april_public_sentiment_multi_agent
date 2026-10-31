@@ -1,0 +1,98 @@
+{
+  "$defs": {
+    "Base64Payload": {
+      "type": "string"
+    },
+    "ControlledUrl": {
+      "maxLength": 8192,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Header": {
+      "additionalProperties": false,
+      "description": "用有序数组保留重复头，不把 Set-Cookie 等重复字段静默折叠。",
+      "properties": {
+        "name": {
+          "default_semantics": "required",
+          "digest": "include",
+          "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$",
+          "routable": false,
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "Header",
+      "type": "object"
+    },
+    "HttpMethod": {
+      "enum": [
+        "GET",
+        "HEAD",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "凭据由 SDK 注入；连接器不能借头字段覆盖认证、路由或升级协议。",
+  "properties": {
+    "headers": {
+      "default_semantics": "absent expands to empty ordered headers",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Header"
+      },
+      "routable": false,
+      "title": "Headers",
+      "type": "array"
+    },
+    "method": {
+      "$ref": "#/$defs/HttpMethod",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "payload_b64": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Base64Payload"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no request body; empty string is an empty body",
+      "digest": "include",
+      "routable": false
+    },
+    "url": {
+      "$ref": "#/$defs/ControlledUrl",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "method",
+    "url"
+  ],
+  "title": "HttpRequest",
+  "type": "object"
+}

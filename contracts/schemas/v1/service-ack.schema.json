@@ -1,0 +1,25 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "持久服务操作的确认身份；协议声明本身不产生确认。",
+  "properties": {
+    "operation_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "operation_id"
+  ],
+  "title": "ServiceAck",
+  "type": "object"
+}

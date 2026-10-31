@@ -1,0 +1,73 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "RateScope": {
+      "additionalProperties": false,
+      "description": "按凭据或主机的稳定限流键；范围解析与授权属于平台。",
+      "properties": {
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "credential",
+            "host"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "scope_id"
+      ],
+      "title": "RateScope",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "每次外部请求都先准入，不能凭 Redis 正余额直接放行。",
+  "properties": {
+    "binding_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "cost": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required whole-token cost in the versioned rate-scope unit",
+      "digest": "include",
+      "routable": false
+    },
+    "rate_scope": {
+      "$ref": "#/$defs/RateScope",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "binding_id",
+    "rate_scope",
+    "cost"
+  ],
+  "title": "AdmissionRequest",
+  "type": "object"
+}

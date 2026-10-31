@@ -4,13 +4,10 @@
 
 import json
 from pathlib import Path
-import socket
-import threading
 
 import httpx
 from pydantic import ConfigDict, Field, ValidationError
 import pytest
-import uvicorn
 
 from apps.api.main import create_app
 from contracts.tooling import WireDecodeError, WireModel, checked_schema, decode_wire, field_metadata
@@ -20,6 +17,7 @@ from tests.support.contract_probe import (
     ENUM_DOMAINS, PROBE_MODELS, PageWireProbe, StrictStatusProbe, WorkerEnvelopeProbe,
     create_transport_probe_app, unknown_enum_paths,
 )
+from tests.support.http_server import loopback_client
 
 
 def envelope_payload() -> dict:
@@ -33,42 +31,9 @@ def envelope_payload() -> dict:
 
 @pytest.fixture(scope="module")
 def http_client():
-    """在独占 loopback 随机端口运行真实 uvicorn，按启动事件同步并有界清理。"""
-    ready = threading.Event()
-    errors = []
-    listener = socket.socket()
-    listener.bind(("127.0.0.1", 0))
-    server = uvicorn.Server(uvicorn.Config(create_transport_probe_app(), access_log=False, log_level="critical", lifespan="off"))
-    original_startup = server.startup
-
-    async def startup(sockets=None):
-        """在实际监听成功后通知客户端，避免依赖随机 sleep 或抢端口。"""
-        await original_startup(sockets=sockets)
-        ready.set()
-
-    def run() -> None:
-        """保留线程失败，不把启动错误误报为网络测试成功。"""
-        try:
-            server.run(sockets=[listener])
-        except BaseException as error:
-            errors.append(error)
-            ready.set()
-
-    server.startup = startup
-    thread = threading.Thread(target=run, daemon=True)
-    thread.start()
-    try:
-        assert ready.wait(5) and server.started and not errors
-        with httpx.Client(base_url=f"http://127.0.0.1:{listener.getsockname()[1]}", timeout=3, trust_env=False) as client:
-            yield client
-    finally:
-        server.should_exit = True
-        thread.join(5)
-        if thread.is_alive():
-            server.force_exit = True
-            thread.join(2)
-        listener.close()
-        assert not thread.is_alive() and not errors
+    """复用同一真实 HTTP 生命周期，继续覆盖原有探针模型。"""
+    with loopback_client(create_transport_probe_app()) as client:
+        yield client
 
 
 def test_registered_schemas_are_current_and_include_metadata() -> None:

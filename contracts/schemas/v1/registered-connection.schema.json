@@ -1,0 +1,52 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "登记返回的来源级指定快照；提交时仍须 I7 即时授权查询。",
+  "properties": {
+    "assignment_version": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no authority assignment is known",
+      "digest": "include",
+      "routable": false
+    },
+    "connection_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "is_authoritative_job": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Is Authoritative Job",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "connection_id",
+    "is_authoritative_job"
+  ],
+  "title": "RegisteredConnection",
+  "type": "object"
+}
