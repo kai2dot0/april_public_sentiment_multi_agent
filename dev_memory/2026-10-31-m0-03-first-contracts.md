@@ -120,4 +120,6 @@ M0-05 / 06 接运行时、SDK、文件连接器、证据、真实 I4 / 注册 / 
 
 ## 7. PR 与交付
 
-待创建本模块 PR。上一模块 PR #8 的实际 merge / CI 证据已补原 G memory；本轮不直接提交或推送 main。
+本模块 [PR #9](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/9)，实现提交 `edd68e3`。本次 PR 关联补记也进入同一功能分支，合并前须重新检查最终 head 的 checks / infrastructure / isolation 三项全成功；最终受检提交、CI run 和 merge SHA 以 PR 实际交付记录为准，不能挪用旧 head 的绿灯。上一模块 PR #8 的实际 merge / CI 证据已补原 G memory；本轮不直接提交或推送 main。
+
+本轮发现全局 gh 默认用户为 kylechandev，未修改该默认设置；仓库操作按已有授权仅在子进程中使用 kai2dot0 的现有 keyring 凭据，不打印 / 写盘凭据，不重新申请权限。
