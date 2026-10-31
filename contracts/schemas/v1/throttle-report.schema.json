@@ -1,0 +1,79 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "RateScope": {
+      "additionalProperties": false,
+      "description": "按凭据或主机的稳定限流键；范围解析与授权属于平台。",
+      "properties": {
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "credential",
+            "host"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "scope_id"
+      ],
+      "title": "RateScope",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "传输服务持久冷却，不能把 Retry-After 仅存进程内。",
+  "properties": {
+    "binding_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "rate_scope": {
+      "$ref": "#/$defs/RateScope",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "response_frame_ref": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "retry_at": {
+      "$ref": "#/$defs/UtcTimestamp",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "binding_id",
+    "rate_scope",
+    "retry_at",
+    "response_frame_ref"
+  ],
+  "title": "ThrottleReport",
+  "type": "object"
+}

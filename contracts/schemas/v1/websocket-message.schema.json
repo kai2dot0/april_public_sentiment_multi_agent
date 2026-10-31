@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "Base64Payload": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "受控订阅参数消息；发送也必须受白名单、协议和共享预算约束。",
+  "properties": {
+    "frame_type": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "text",
+        "binary"
+      ],
+      "routable": false,
+      "title": "Frame Type",
+      "type": "string"
+    },
+    "payload_b64": {
+      "$ref": "#/$defs/Base64Payload",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "frame_type",
+    "payload_b64"
+  ],
+  "title": "WebSocketMessage",
+  "type": "object"
+}

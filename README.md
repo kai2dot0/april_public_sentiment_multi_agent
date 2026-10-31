@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架及 PG / Kafka / JCS / CEL / 契约工具链验证，当前增加 **M0-02F worker 隔离验证**：真实 cgroup OOM、角色网络策略、整树终止和缓存清理核验。任务编排、采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架与 M0-02 七项技术验证已交付，本轮进入 **M0-03 第一批正式契约**：执行上下文、受控传输、FetchPage / 条目结果、状态错误与 ID 派生输入。任务编排、实际采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -78,9 +78,20 @@ make measure-contract-matrix # 全量维度扫描和耗时；不是 H11 业务�
 
 采用 HTTP/JSON，复用既有依赖。`contracts/tooling.py` 提供严格字节解码与字段元数据原型；测试模型只导出到 `contracts/schemas/probes/`，`make check` 比对漂移。修改模型后可显式 `make schema-write`，审查生成 diff 后通过 PR。
 
-未知枚举保持原始字符串，墓碑载荷经真实 HTTP 往返仍保留；重复键、非法编码和结构损坏明确失败。探针端点仅在测试 app，正式 API 不开放它。完整 FetchPage、控制提交和签名按后续阶段实现。
+未知枚举保持原始字符串，墓碑载荷经真实 HTTP 往返仍保留；重复键、非法编码和结构损坏明确失败。探针端点仅在测试 app，正式 API 不开放它。正式 FetchPage 已在下述第一批契约提供；控制提交和签名按后续阶段实现。
 
 当前维度轮廓全量 3,317,760 个组合，显式排除后扫描 2,488,320 个；耗时只含扫描和未知值检查，不代表完整决策表。方案、数值域发现及 CI 策略见 [ADR 0006](docs/decisions/0006-contract-toolchain.md)、[实测记录](docs/validation/m0-02e-matrix-scan.json) 和 [dev_memory](dev_memory/2026-10-30-m0-02e-contract-toolchain.md)。
+
+## 第一批正式契约
+
+```bash
+make test-first-contracts # 模式权限、FetchPage、传输边界、ID 输入与真实 HTTP 往返
+make schema-check         # 同时检查 29 份正式 v1 schema 和 3 份历史探针 schema
+```
+
+正式模型位于 `contracts/`，接口位于 `spi/transport.py`，SDK 层组合具体消息类型，保持独立叶子边界。接收 Worker 页面必须用 `decode_wire(FetchPageWire, bytes)`，未知状态 / 条目结果和控制载荷原样保留；构造侧才使用严格枚举的 `FetchPage`。所有数字计数限定 JCS 安全范围，外部游标使用字符串；切片导入强制 live / 正式空间 / manual_only，无外部读取。
+
+字段、缺省与调用规范见 [第一批契约 v1](docs/contracts/first-batch-v1.md)、[ADR 0009](docs/decisions/0009-first-contracts.md) 和 [dev_memory](dev_memory/2026-10-31-m0-03-first-contracts.md)。本轮是接口与校验工程基线，没有生产传输服务或提交成功回执；完整结果包、摘要投影 / 签名、独立控制校验与事务上下文属于 M0-04，实际运行时 / SDK / 连接器接线随后开发。
 
 ## worker 隔离验证
 

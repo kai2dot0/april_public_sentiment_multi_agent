@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "由平台解析有效配置后提供的能力，不是连接器临时自报。",
+  "properties": {
+    "control_delivery_bound_kind": {
+      "default": "unknown",
+      "default_semantics": "absent means no usable delivery guarantee",
+      "digest": "include",
+      "enum": [
+        "unknown",
+        "sla",
+        "guarantee"
+      ],
+      "routable": false,
+      "title": "Control Delivery Bound Kind",
+      "type": "string"
+    },
+    "supports_required_continuity": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Supports Required Continuity",
+      "type": "boolean"
+    },
+    "supports_resume": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Supports Resume",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "supports_resume",
+    "supports_required_continuity"
+  ],
+  "title": "CollectionCapabilities",
+  "type": "object"
+}

@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-jcs test-cel test-contract-toolchain test-source-protocol probe-source-metadata schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-jcs test-cel test-contract-toolchain test-first-contracts test-source-protocol probe-source-metadata schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -35,6 +35,10 @@ test-cel:
 # 测试 app 的真实 loopback HTTP / JSON、模型与规模探针。
 test-contract-toolchain:
 	uv run --locked pytest tests/unit/test_contract_toolchain.py tests/unit/test_decision_matrix.py
+
+# 第一批正式契约、模式权限、传输边界与真实 HTTP 编解码。
+test-first-contracts:
+	uv run --locked pytest tests/unit/test_first_contracts.py
 
 # 合成来源控制帧、真实 loopback WS 断线 / 恢复；默认 check 包含这些测试。
 test-source-protocol:

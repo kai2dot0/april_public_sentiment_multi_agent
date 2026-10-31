@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "Base64Payload": {
+      "type": "string"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "帧引用由 SDK 生成；连接器回报事件身份时不填写时间 / 追赶标记。",
+  "properties": {
+    "frame_ref": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "frame_type": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "text",
+        "binary"
+      ],
+      "routable": false,
+      "title": "Frame Type",
+      "type": "string"
+    },
+    "payload_b64": {
+      "$ref": "#/$defs/Base64Payload",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "frame_ref",
+    "frame_type",
+    "payload_b64"
+  ],
+  "title": "ReceivedFrame",
+  "type": "object"
+}

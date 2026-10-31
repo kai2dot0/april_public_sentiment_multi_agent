@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "仅 SDK → 传输服务使用；服务必须按帧登记核对，禁止直接暴露给连接器。",
+  "properties": {
+    "catching_up": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Catching Up",
+      "type": "boolean"
+    },
+    "connection_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "frame_seq": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "ingress_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "job_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "received_at": {
+      "$ref": "#/$defs/UtcTimestamp",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "source_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "upstream_event_identity": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "connection_id",
+    "frame_seq",
+    "ingress_id",
+    "process_instance_id",
+    "source_id",
+    "job_id",
+    "upstream_event_identity",
+    "received_at",
+    "catching_up"
+  ],
+  "title": "TrustedReceiptRegistration",
+  "type": "object"
+}

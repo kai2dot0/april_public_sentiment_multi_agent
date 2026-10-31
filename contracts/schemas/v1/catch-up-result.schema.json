@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "未验证时继续追赶，不能靠连接器填写一个时间戳直接改为实时。",
+  "properties": {
+    "accepted": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Accepted",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "accepted"
+  ],
+  "title": "CatchUpResult",
+  "type": "object"
+}

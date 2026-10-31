@@ -1,0 +1,513 @@
+{
+  "$defs": {
+    "CallingPrincipal": {
+      "additionalProperties": false,
+      "description": "平台授予的调用主体描述；反序列化本身不赋予服务身份。",
+      "properties": {
+        "role": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "platform",
+            "agent",
+            "connector",
+            "normalizer",
+            "operations"
+          ],
+          "routable": false,
+          "title": "Role",
+          "type": "string"
+        },
+        "subject_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "subject_id",
+        "role"
+      ],
+      "title": "CallingPrincipal",
+      "type": "object"
+    },
+    "ControlledUrl": {
+      "maxLength": 8192,
+      "minLength": 1,
+      "type": "string"
+    },
+    "ExecutionContext": {
+      "additionalProperties": false,
+      "description": "平台构造的上下文数据；未来入口必须重新认证，不能信任 Worker 自报。",
+      "properties": {
+        "allowed_capabilities": {
+          "default_semantics": "required explicit capability set",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Allowed Capabilities",
+          "type": "array"
+        },
+        "allowed_pools": {
+          "default_semantics": "required explicit pool set",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Pool"
+          },
+          "routable": false,
+          "title": "Allowed Pools",
+          "type": "array"
+        },
+        "allowed_tools": {
+          "default_semantics": "required explicit tool set",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "caller": {
+          "$ref": "#/$defs/CallingPrincipal",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "external_reads": {
+          "default_semantics": "required explicit grants; empty means no external reads",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ExternalReadGrant"
+          },
+          "routable": false,
+          "title": "External Reads",
+          "type": "array"
+        },
+        "external_side_effects": {
+          "default_semantics": "required; still requires Manifest and platform authorization",
+          "digest": "include",
+          "routable": false,
+          "title": "External Side Effects",
+          "type": "boolean"
+        },
+        "input_origin": {
+          "default": "native",
+          "default_semantics": "absent means native execution, not an import",
+          "digest": "include",
+          "enum": [
+            "native",
+            "slice_import",
+            "slice_reproduction"
+          ],
+          "routable": false,
+          "title": "Input Origin",
+          "type": "string"
+        },
+        "mode": {
+          "$ref": "#/$defs/ExecutionMode",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": true
+        },
+        "policy_version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "publication_policy": {
+          "$ref": "#/$defs/PublicationPolicy",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "quotas": {
+          "default_semantics": "required; exactly one quota per allowed pool",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/PoolQuota"
+          },
+          "routable": false,
+          "title": "Quotas",
+          "type": "array"
+        },
+        "run_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": true
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "default_semantics": "absent expands to contract version 1.0.0",
+          "digest": "include",
+          "routable": false,
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_namespace": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent for native execution; imports retain original source namespace",
+          "digest": "include",
+          "routable": false
+        },
+        "state_namespace": {
+          "$ref": "#/$defs/Namespace",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": true
+        },
+        "visible_namespaces": {
+          "default_semantics": "required explicit visibility; empty grants no namespace",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Namespace"
+          },
+          "routable": false,
+          "title": "Visible Namespaces",
+          "type": "array"
+        }
+      },
+      "required": [
+        "tenant_id",
+        "caller",
+        "policy_version",
+        "run_id",
+        "mode",
+        "state_namespace",
+        "visible_namespaces",
+        "allowed_capabilities",
+        "allowed_tools",
+        "allowed_pools",
+        "quotas",
+        "publication_policy",
+        "external_reads",
+        "external_side_effects"
+      ],
+      "title": "ExecutionContext",
+      "type": "object"
+    },
+    "ExecutionMode": {
+      "enum": [
+        "live",
+        "replay",
+        "shadow",
+        "eval",
+        "backfill"
+      ],
+      "type": "string"
+    },
+    "ExternalReadGrant": {
+      "additionalProperties": false,
+      "description": "凭据只存范围引用；canary 只授权其他读取能力，不许可重新采集。",
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "credential_scope_ref": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent only for an explicit non-collector canary grant",
+          "digest": "include",
+          "routable": false
+        },
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "connector",
+            "canary"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "capability",
+        "source_id",
+        "credential_scope_ref"
+      ],
+      "title": "ExternalReadGrant",
+      "type": "object"
+    },
+    "FetchBudget": {
+      "additionalProperties": false,
+      "description": "显式有界切片预算；重试与首次请求共享这些余额。",
+      "properties": {
+        "max_decompressed_bytes": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_messages": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_pages": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_requests": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "wall_timeout_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "max_requests",
+        "max_messages",
+        "max_decompressed_bytes",
+        "wall_timeout_ms",
+        "max_pages"
+      ],
+      "title": "FetchBudget",
+      "type": "object"
+    },
+    "HttpMethod": {
+      "enum": [
+        "GET",
+        "HEAD",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS"
+      ],
+      "type": "string"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Namespace": {
+      "additionalProperties": false,
+      "description": "命名空间的名称与正式 / 隔离属性均由平台解析，不由 Agent 决定。",
+      "properties": {
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "formal",
+            "isolated"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "Namespace",
+      "type": "object"
+    },
+    "Pool": {
+      "enum": [
+        "io",
+        "cpu",
+        "llm"
+      ],
+      "type": "string"
+    },
+    "PoolQuota": {
+      "additionalProperties": false,
+      "description": "显式配额，缺省不意味着无限额度。",
+      "properties": {
+        "max_bytes": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_concurrency": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_requests": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "pool": {
+          "$ref": "#/$defs/Pool",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "wall_timeout_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "pool",
+        "max_concurrency",
+        "max_requests",
+        "max_bytes",
+        "wall_timeout_ms"
+      ],
+      "title": "PoolQuota",
+      "type": "object"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "PublicationPolicy": {
+      "enum": [
+        "automatic",
+        "manual_only"
+      ],
+      "type": "string"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "SDK 创建的授权描述；序列化内容不是可自行铸造的访问令牌。",
+  "properties": {
+    "allowed_methods": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/HttpMethod"
+      },
+      "routable": false,
+      "title": "Allowed Methods",
+      "type": "array"
+    },
+    "allowed_origins": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/ControlledUrl"
+      },
+      "routable": false,
+      "title": "Allowed Origins",
+      "type": "array"
+    },
+    "binding_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "budget": {
+      "$ref": "#/$defs/FetchBudget",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "context": {
+      "$ref": "#/$defs/ExecutionContext",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "grant": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExternalReadGrant"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default_semantics": "required; explicit null means an offline handle with no network authority",
+      "digest": "include",
+      "routable": false
+    },
+    "pool": {
+      "const": "io",
+      "default": "io",
+      "default_semantics": "absent binds connector transport to the io pool",
+      "digest": "include",
+      "routable": false,
+      "title": "Pool",
+      "type": "string"
+    }
+  },
+  "required": [
+    "binding_id",
+    "context",
+    "grant",
+    "budget",
+    "allowed_origins",
+    "allowed_methods"
+  ],
+  "title": "TransportBinding",
+  "type": "object"
+}

@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "由平台已可靠登记的上下文构造；Worker 不能自报观测集合或授权结果。",
+  "properties": {
+    "control_validation_passed": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Control Validation Passed",
+      "type": "boolean"
+    },
+    "execution_form": {
+      "const": "bounded_slice",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Execution Form",
+      "type": "string"
+    },
+    "has_valid_prefix": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Has Valid Prefix",
+      "type": "boolean"
+    },
+    "persisted_prefix_refs": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Persisted Prefix Refs",
+      "type": "array"
+    },
+    "request_mode": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "item_addressed",
+        "query_or_stream"
+      ],
+      "routable": false,
+      "title": "Request Mode",
+      "type": "string"
+    },
+    "requested_item_refs": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Requested Item Refs",
+      "type": "array"
+    },
+    "schedule": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "periodic",
+        "continuous"
+      ],
+      "routable": false,
+      "title": "Schedule",
+      "type": "string"
+    },
+    "single_resource": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Single Resource",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schedule",
+    "execution_form",
+    "single_resource",
+    "request_mode",
+    "requested_item_refs",
+    "persisted_prefix_refs",
+    "has_valid_prefix",
+    "control_validation_passed"
+  ],
+  "title": "FetchDecisionContext",
+  "type": "object"
+}

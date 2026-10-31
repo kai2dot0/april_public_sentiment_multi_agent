@@ -92,4 +92,6 @@ rtk proxy make probe-source-metadata
 
 ## 8. PR 与交付
 
+M0-03 开工补记：PR #8 已于 2026-10-30 16:11:44 UTC（上海 2026-10-31 00:11:44）合并，merge SHA `340db0fcd7c91321c02d80ce823dcaea3706ed9c`。受检 head `a8bfc62a4f046def3c6d0fc325d9db0357e4eed0`，CI run `41087280569` 的 checks / infrastructure / isolation 全 SUCCESS。合并后 main 与 origin/main 同步、工作区干净，树与受检提交相同。
+
 本模块 [PR #8](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/8)，实现提交 `86bcbf1`；本次文档补记也进入同一 PR，必须等待其最终 head 的 checks / infrastructure / isolation 三项全部成功才合并。最终受检提交、CI run、merge SHA / 状态以 PR 实际记录为准，不把先前 head 的绿灯移用到后续提交。上一模块 PR #7 合并证据已补原 F memory；本模块不直接推 main。
