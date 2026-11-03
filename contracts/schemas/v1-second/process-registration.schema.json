@@ -1,0 +1,44 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "仅登记服务的持久确认；没有注册 Fake 的默认成功实现。",
+  "properties": {
+    "accepted_frontier": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "registration_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "registration_id",
+    "process_instance_id",
+    "accepted_frontier"
+  ],
+  "title": "ProcessRegistration",
+  "type": "object"
+}

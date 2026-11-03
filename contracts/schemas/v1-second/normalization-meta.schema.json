@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "每进程只加载指定连接器制品，升级后旧制品继续处理其原始响应。",
+  "properties": {
+    "connector_artifact_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "schema_lock": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "source_kind": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "post",
+        "comment",
+        "article",
+        "notice",
+        "ai_answer_observation"
+      ],
+      "routable": false,
+      "title": "Source Kind",
+      "type": "string"
+    },
+    "source_namespace": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "connector_artifact_digest",
+    "source_namespace",
+    "source_kind",
+    "schema_lock"
+  ],
+  "title": "NormalizationMeta",
+  "type": "object"
+}

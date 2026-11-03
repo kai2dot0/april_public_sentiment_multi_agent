@@ -1,0 +1,491 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "CoverageProof": {
+      "additionalProperties": false,
+      "description": "回访确认已设置后保留的覆盖证明，不改写上游事件比较键。",
+      "properties": {
+        "evidence_ref": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "freshness_lower_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "observation_upper_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "reference_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "freshness_lower_at",
+        "observation_upper_at",
+        "evidence_ref",
+        "reference_at"
+      ],
+      "title": "CoverageProof",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositionDomain": {
+      "additionalProperties": false,
+      "description": "位置与排序域显式绑定来源、上游实例和游标语义版本。",
+      "properties": {
+        "cursor_semantics": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "ordering_domain": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_instance": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "source_id",
+        "upstream_instance",
+        "ordering_domain",
+        "cursor_semantics"
+      ],
+      "title": "PositionDomain",
+      "type": "object"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "SourcePosition": {
+      "additionalProperties": false,
+      "description": "外部序号 / 时间 / 不透明游标均用字符串；禁止跨域直接比较。",
+      "properties": {
+        "domain": {
+          "$ref": "#/$defs/PositionDomain",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "value": {
+          "default_semantics": "required nonempty opaque cursor; preserve whitespace and exact UTF-8 text",
+          "digest": "include",
+          "minLength": 1,
+          "routable": false,
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "domain",
+        "value"
+      ],
+      "title": "SourcePosition",
+      "type": "object"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "TemporaryReasonRow": {
+      "additionalProperties": false,
+      "description": "每原因位置在解除后仍保留；availability 变化与永久代次分离。",
+      "properties": {
+        "comparison_basis": {
+          "anyOf": [
+            {
+              "enum": [
+                "upstream_event_time",
+                "authority_position",
+                "commit_order"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent for epoch-only gate reasons",
+          "digest": "include",
+          "routable": false,
+          "title": "Comparison Basis"
+        },
+        "coverage_proof": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CoverageProof"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no retained set-state revisit proof",
+          "digest": "include",
+          "routable": false
+        },
+        "enabled": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "epoch": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "handoff_epoch": {
+          "$ref": "#/$defs/SafeCount",
+          "default": 0,
+          "default_semantics": "absent means no established handoff",
+          "digest": "include",
+          "routable": false
+        },
+        "last_event_identity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no processed upstream event identity",
+          "digest": "include",
+          "routable": false
+        },
+        "last_event_time": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UtcTimestamp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no processed upstream time",
+          "digest": "include",
+          "routable": false
+        },
+        "last_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePosition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no processed comparable position",
+          "digest": "include",
+          "routable": false
+        },
+        "reason": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "account_inactive",
+            "sync_unverified",
+            "source_gap"
+          ],
+          "routable": false,
+          "title": "Reason",
+          "type": "string"
+        },
+        "resolved_cover_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UtcTimestamp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no proven cover frontier",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reason",
+        "enabled",
+        "epoch"
+      ],
+      "title": "TemporaryReasonRow",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "控制表字段清单 DTO；最终读时可用性还需逐文档核验与待确认撤回查询。",
+  "properties": {
+    "assignment_version": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no authority assignment recorded",
+      "digest": "include",
+      "routable": false
+    },
+    "authority_domain": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositionDomain"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means authority position domain is unknown",
+      "digest": "include",
+      "routable": false
+    },
+    "availability": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "available",
+        "unavailable"
+      ],
+      "routable": false,
+      "title": "Availability",
+      "type": "string"
+    },
+    "availability_version": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "establishing_job_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no authority-domain establishing job",
+      "digest": "include",
+      "routable": false
+    },
+    "handoff_epoch": {
+      "$ref": "#/$defs/SafeCount",
+      "default": 0,
+      "default_semantics": "absent means no handoff",
+      "digest": "include",
+      "routable": false
+    },
+    "handoff_established_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means handoff time is unknown",
+      "digest": "include",
+      "routable": false
+    },
+    "handoff_in_progress": {
+      "default": false,
+      "default_semantics": "absent means no account handoff check is in progress",
+      "digest": "include",
+      "routable": false,
+      "title": "Handoff In Progress",
+      "type": "boolean"
+    },
+    "last_presence_upper_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means presence upper bound is unknown",
+      "digest": "include",
+      "routable": false
+    },
+    "permanently_withdrawn": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Permanently Withdrawn",
+      "type": "boolean"
+    },
+    "reasons": {
+      "default_semantics": "absent means no stored temporary reasons",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/TemporaryReasonRow"
+      },
+      "routable": false,
+      "title": "Reasons",
+      "type": "array"
+    },
+    "target": {
+      "$ref": "#/$defs/ControlObjectRef",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "withdrawal_epoch": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "target",
+    "permanently_withdrawn",
+    "withdrawal_epoch",
+    "availability_version",
+    "availability"
+  ],
+  "title": "ControlObjectRow",
+  "type": "object"
+}

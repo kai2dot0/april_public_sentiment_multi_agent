@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "WithdrawalLogEntry": {
+      "additionalProperties": false,
+      "description": "仅永久撤回产生此日志；临时不可用仍走当前读时门控。",
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "sequence": {
+          "$ref": "#/$defs/WithdrawalSequence",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "withdrawal_epoch": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "sequence",
+        "target",
+        "withdrawal_epoch",
+        "reason"
+      ],
+      "title": "WithdrawalLogEntry",
+      "type": "object"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "连续日志页与同一读取快照的权威前沿；有缺口必须先补齐。",
+  "properties": {
+    "after": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "authority_frontier": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "entries": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/WithdrawalLogEntry"
+      },
+      "routable": false,
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "after",
+    "authority_frontier",
+    "entries"
+  ],
+  "title": "WithdrawalBatch",
+  "type": "object"
+}

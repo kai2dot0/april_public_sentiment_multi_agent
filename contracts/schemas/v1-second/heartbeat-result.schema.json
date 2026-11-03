@@ -1,0 +1,52 @@
+{
+  "$defs": {
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "停止指示不续旧代次任务；Worker 尽快提交已抓取部分。",
+  "properties": {
+    "keep_running": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Keep Running",
+      "type": "boolean"
+    },
+    "lease_expires_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent when lease was not renewed",
+      "digest": "include",
+      "routable": false
+    },
+    "reason": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "renewed",
+        "generation_changed",
+        "lease_lost"
+      ],
+      "routable": false,
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "keep_running",
+    "reason"
+  ],
+  "title": "HeartbeatResult",
+  "type": "object"
+}

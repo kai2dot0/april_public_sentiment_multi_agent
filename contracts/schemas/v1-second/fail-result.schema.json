@@ -1,0 +1,56 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "失败结算结果；真实尝试预算仍由平台持久保存。",
+  "properties": {
+    "retry_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent except for a scheduled retry",
+      "digest": "include",
+      "routable": false
+    },
+    "status": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "retry_scheduled",
+        "dead_letter",
+        "skipped_withdrawn"
+      ],
+      "routable": false,
+      "title": "Status",
+      "type": "string"
+    },
+    "task_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "task_id",
+    "status"
+  ],
+  "title": "FailResult",
+  "type": "object"
+}

@@ -1,0 +1,25 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "监督器重启 / 运维接手按稳定进程组身份查询前任实例。",
+  "properties": {
+    "process_group_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "process_group_id"
+  ],
+  "title": "UnretiredQuery",
+  "type": "object"
+}

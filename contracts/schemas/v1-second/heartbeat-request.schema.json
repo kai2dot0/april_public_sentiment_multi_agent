@@ -1,0 +1,32 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "续租由当前租约与作业栅栏判定，客户端不能指定新过期时间。",
+  "properties": {
+    "lease_token": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "exclude",
+      "routable": false
+    },
+    "task_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "task_id",
+    "lease_token"
+  ],
+  "title": "HeartbeatRequest",
+  "type": "object"
+}

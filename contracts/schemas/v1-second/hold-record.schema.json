@@ -1,0 +1,351 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "HoldConflict": {
+      "additionalProperties": false,
+      "description": "并入时刻参与回访有效性判定；不存来源正文或自由异常文本。",
+      "properties": {
+        "conflict_type": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "set",
+            "clear",
+            "unordered"
+          ],
+          "routable": false,
+          "title": "Conflict Type",
+          "type": "string"
+        },
+        "desired_inactive": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Desired Inactive",
+          "type": "boolean"
+        },
+        "event_identity": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "event_time": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UtcTimestamp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means untrusted or unknown event time",
+          "digest": "include",
+          "routable": false
+        },
+        "merged_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePosition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means incomparable position",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "conflict_type",
+        "merged_at",
+        "event_identity",
+        "desired_inactive"
+      ],
+      "title": "HoldConflict",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositionDomain": {
+      "additionalProperties": false,
+      "description": "位置与排序域显式绑定来源、上游实例和游标语义版本。",
+      "properties": {
+        "cursor_semantics": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "ordering_domain": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_instance": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "source_id",
+        "upstream_instance",
+        "ordering_domain",
+        "cursor_semantics"
+      ],
+      "title": "PositionDomain",
+      "type": "object"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "SourcePosition": {
+      "additionalProperties": false,
+      "description": "外部序号 / 时间 / 不透明游标均用字符串；禁止跨域直接比较。",
+      "properties": {
+        "domain": {
+          "$ref": "#/$defs/PositionDomain",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "value": {
+          "default_semantics": "required nonempty opaque cursor; preserve whitespace and exact UTF-8 text",
+          "digest": "include",
+          "minLength": 1,
+          "routable": false,
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "domain",
+        "value"
+      ],
+      "title": "SourcePosition",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "独立 hold 表；存储层须用账号 / 原因的未关闭部分唯一索引约束。",
+  "properties": {
+    "account": {
+      "$ref": "#/$defs/ControlObjectRef",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "attempts_used": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "close_reason": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent for open hold",
+      "digest": "include",
+      "routable": false
+    },
+    "closed_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means hold remains open",
+      "digest": "include",
+      "routable": false
+    },
+    "conflicts": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/HoldConflict"
+      },
+      "routable": false,
+      "title": "Conflicts",
+      "type": "array"
+    },
+    "handoff_epoch": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "hold_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "kind": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "conservative",
+        "handoff_check"
+      ],
+      "routable": false,
+      "title": "Kind",
+      "type": "string"
+    },
+    "last_merged_at": {
+      "$ref": "#/$defs/UtcTimestamp",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "max_attempts": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "reason": {
+      "const": "account_inactive",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Reason",
+      "type": "string"
+    },
+    "retry_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no scheduled retry",
+      "digest": "include",
+      "routable": false
+    },
+    "revisit_state": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "idle",
+        "inflight",
+        "backoff",
+        "manual",
+        "retired"
+      ],
+      "routable": false,
+      "title": "Revisit State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hold_id",
+    "account",
+    "reason",
+    "kind",
+    "conflicts",
+    "last_merged_at",
+    "handoff_epoch",
+    "revisit_state",
+    "attempts_used",
+    "max_attempts"
+  ],
+  "title": "HoldRecord",
+  "type": "object"
+}

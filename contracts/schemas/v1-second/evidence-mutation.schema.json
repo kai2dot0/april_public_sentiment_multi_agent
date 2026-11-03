@@ -1,0 +1,234 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "EvidenceCreation": {
+      "additionalProperties": false,
+      "description": "仅提交事务内首次创建的三类；上传准备在计算段之前完成。",
+      "properties": {
+        "byte_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "source_content",
+            "statistic",
+            "rule_decision"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "parent_evidence": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/StableReference"
+          },
+          "routable": false,
+          "title": "Parent Evidence",
+          "type": "array"
+        },
+        "reference": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reference",
+        "kind",
+        "byte_digest",
+        "parent_evidence",
+        "roots"
+      ],
+      "title": "EvidenceCreation",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "RootSources": {
+      "additionalProperties": false,
+      "description": "普通内容写入根集合只含文档 / 账号；来源级记录走单独持锁断言。",
+      "properties": {
+        "objects": {
+          "default_semantics": "absent expands to empty declared root set; runtime must independently resolve lineage",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlObjectRef"
+          },
+          "routable": false,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "title": "RootSources",
+      "type": "object"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "StagedPromotion": {
+      "additionalProperties": false,
+      "description": "已有 staged 对象只转正，不携带或改写 blob 实例绑定。",
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reference",
+        "roots"
+      ],
+      "title": "StagedPromotion",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "I5 仅转正 / 首次创建 / live 校验，不在提交事务内上传或改绑实例。",
+  "properties": {
+    "creations": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/EvidenceCreation"
+      },
+      "routable": false,
+      "title": "Creations",
+      "type": "array"
+    },
+    "promotions": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/StagedPromotion"
+      },
+      "routable": false,
+      "title": "Promotions",
+      "type": "array"
+    },
+    "references_to_check": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/StableReference"
+      },
+      "routable": false,
+      "title": "References To Check",
+      "type": "array"
+    }
+  },
+  "required": [
+    "promotions",
+    "creations",
+    "references_to_check"
+  ],
+  "title": "EvidenceMutation",
+  "type": "object"
+}

@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "CacheDeclaration": {
+      "additionalProperties": false,
+      "description": "受监督器管理的目录身份；不是 Worker 自选的任意宿主路径。",
+      "properties": {
+        "cache_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "managed_location_ref": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "cache_id",
+        "managed_location_ref"
+      ],
+      "title": "CacheDeclaration",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "进程组永久丢失也保留待核验副本，不宣称全副本已清理。",
+  "properties": {
+    "caches": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/CacheDeclaration"
+      },
+      "routable": false,
+      "title": "Caches",
+      "type": "array"
+    },
+    "frontier": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_group_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "state": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "active",
+        "suspect",
+        "pending_verification",
+        "retired"
+      ],
+      "routable": false,
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "process_instance_id",
+    "process_group_id",
+    "state",
+    "frontier",
+    "caches"
+  ],
+  "title": "ProcessReplica",
+  "type": "object"
+}

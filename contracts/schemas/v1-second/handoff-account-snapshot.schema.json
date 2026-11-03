@@ -1,0 +1,113 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "I7 集合式生成并逐账号承接；快照独立存储，不逐账号抢先建保持。",
+  "properties": {
+    "account": {
+      "$ref": "#/$defs/ControlObjectRef",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "adopted_at": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means account has not adopted this handoff",
+      "digest": "include",
+      "routable": false
+    },
+    "handoff_epoch": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "source": {
+      "$ref": "#/$defs/ControlObjectRef",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "source",
+    "handoff_epoch",
+    "account"
+  ],
+  "title": "HandoffAccountSnapshot",
+  "type": "object"
+}

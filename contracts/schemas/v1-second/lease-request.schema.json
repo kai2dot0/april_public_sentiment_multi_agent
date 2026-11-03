@@ -1,0 +1,49 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "成功注册撤回接收端后才领取，Demo 批量固定为一。",
+  "properties": {
+    "consumer": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "max_tasks": {
+      "default": 1,
+      "default_semantics": "absent expands to Demo max_batch=1",
+      "digest": "include",
+      "maximum": 1,
+      "minimum": 1,
+      "routable": false,
+      "title": "Max Tasks",
+      "type": "integer"
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "registration_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "consumer",
+    "process_instance_id",
+    "registration_id"
+  ],
+  "title": "LeaseRequest",
+  "type": "object"
+}

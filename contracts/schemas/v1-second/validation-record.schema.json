@@ -1,0 +1,229 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "DimensionResult": {
+      "additionalProperties": false,
+      "description": "执行形态与当前结论分开，异步 pending 不伪装为验证通过。",
+      "properties": {
+        "affected_by_deletion": {
+          "default": false,
+          "default_semantics": "absent means no recorded deletion impact; meaningful for computation",
+          "digest": "include",
+          "routable": false,
+          "title": "Affected By Deletion",
+          "type": "boolean"
+        },
+        "dimension": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "execution": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "sync",
+            "async",
+            "not_applicable"
+          ],
+          "routable": false,
+          "title": "Execution",
+          "type": "string"
+        },
+        "result": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "passed",
+            "failed",
+            "pending",
+            "not_applicable"
+          ],
+          "routable": false,
+          "title": "Result",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dimension",
+        "execution",
+        "result"
+      ],
+      "title": "DimensionResult",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "RootSources": {
+      "additionalProperties": false,
+      "description": "普通内容写入根集合只含文档 / 账号；来源级记录走单独持锁断言。",
+      "properties": {
+        "objects": {
+          "default_semantics": "absent expands to empty declared root set; runtime must independently resolve lineage",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlObjectRef"
+          },
+          "routable": false,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "title": "RootSources",
+      "type": "object"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "六个唯一维度包含 computation，实际目录成员须由 I14 按目录版本核对。",
+  "properties": {
+    "claim_ref": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "content_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "dimension_catalog": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "dimensions": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/DimensionResult"
+      },
+      "maxItems": 6,
+      "minItems": 6,
+      "routable": false,
+      "title": "Dimensions",
+      "type": "array"
+    },
+    "reference": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "roots": {
+      "$ref": "#/$defs/RootSources",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "rule_pack": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "reference",
+    "claim_ref",
+    "content_digest",
+    "dimension_catalog",
+    "rule_pack",
+    "dimensions",
+    "roots"
+  ],
+  "title": "ValidationRecord",
+  "type": "object"
+}
