@@ -117,6 +117,6 @@ PG 实验包括：同 backend / txid；独立 observer 提交前不可见、提�
 
 ## 7. PR 与交付证据
 
-独立功能分支提交和 PR 信息在创建后补记；合并前核对**最终 head** 的 checks / infrastructure / isolation 三项均成功，PR body 记录实际受检 head / run / merge 证据，不能复用旧 head。原 PR #9 的实际 CI / merge 已补入其原 memory。
+本模块 [PR #10](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/10)，实现提交 `679b88298f6be51510c61acdf7e69561a7f97c5e`。本次关联补记也经同一功能分支提交；合并前核对**最终 head** 的 checks / infrastructure / isolation 三项均成功，实际受检 head / run 及合并证据以 PR 交付记录为准，不能复用旧 head。原 PR #9 的实际 CI / merge 已补入其原 memory；本轮没有直接向 main 提交 / 推送。
 
 继续保持全局 gh 默认账号 kylechandev；授权 kai2dot0 凭据仅在子进程内用于本仓库 git / gh，不打印、写盘或重新申请。所有发布操作沿用户已授权的 PR → CI → merge 流程。
