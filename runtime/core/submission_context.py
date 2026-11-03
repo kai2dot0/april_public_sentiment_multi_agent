@@ -56,7 +56,7 @@ class _ScopedExecutor:
     def assert_active(self) -> None:
         """同时核对适配器调用范围和真实事务生命周期。"""
         self._owner._check()
-        if self._owner._adapter is None:
+        if self._owner._adapter is None or self._owner._transaction is not self:
             raise LockOrderError("Transaction access requires an active adapter scope")
 
     def execute(self, statement: str, parameters: tuple[object, ...] = ()) -> SqlResult:
@@ -86,7 +86,7 @@ class GuardedSubmissionContext:
         self._step = 0
         self._adapter = None
         self._roots_checked = False
-        self._transaction = _ScopedExecutor(self)
+        self._transaction = None
         executor.assert_active()
 
     def _check(self):
@@ -154,6 +154,8 @@ class GuardedSubmissionContext:
     @property
     def transaction(self) -> TransactionExecutor:
         """不给适配器原始连接，且仅在合法步骤 / 调用范围内访问。"""
+        if self._transaction is None:
+            raise LockOrderError("Transaction access requires an active adapter scope")
         self._transaction.assert_active()
         return self._transaction
 
@@ -165,6 +167,7 @@ class GuardedSubmissionContext:
             self.close()
             raise LockOrderError("Adapter is not allowed at this commit step")
         self._adapter, self._roots_checked = interface, False
+        self._transaction = _ScopedExecutor(self)
         try:
             yield self
         except BaseException:
@@ -172,6 +175,7 @@ class GuardedSubmissionContext:
             raise
         finally:
             self._adapter, self._roots_checked = None, False
+            self._transaction = None
 
     def close(self) -> None:
         """仅使借用失效；提交 / 回滚仍由原事务 owner 负责。"""

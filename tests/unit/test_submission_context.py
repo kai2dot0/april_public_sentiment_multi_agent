@@ -65,6 +65,11 @@ def test_all_steps_and_scoped_transaction():
         assert not any(hasattr(borrowed, name) for name in ("commit", "rollback", "connect", "cursor"))
     with pytest.raises(LockOrderError):
         borrowed.execute("SELECT 1")
+    with ctx.adapter("I5"):
+        ctx.assert_roots(roots)
+        with pytest.raises(LockOrderError):
+            borrowed.execute("SELECT 1")
+        ctx.transaction.assert_active()  # 旧借用不能因后续调用而重新生效。
     advance(ctx, 9, 13)
     assert len(COMMIT_STEPS) == 13 and len(port.calls) == 2
     ctx.close()

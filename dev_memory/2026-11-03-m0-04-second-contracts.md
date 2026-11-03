@@ -74,7 +74,7 @@ control / state 冲突保留租约，分别返回最新永久代次 / 状态版�
 
 十三步只是本轮守卫的挂点。第六步文档 / 账号 → 来源 → 交接账号快照 → 撤回计数器；第八步 blob → logical；第九步 state → observation → timer；第十步 derived；第十一序号、第十二 job。预先合并控制模式：引用 KEY SHARE、临时 NO KEY UPDATE、永久或合并 UPDATE，不升级。来源 authority_position 账号控制用 SHARE，切换 / 接任用 NO KEY UPDATE，来源级记录不能用 SHARE 冒充写锁。
 
-acquire_lock 先检查当前步骤、接口允许层、预选模式和锁序，再执行借用事务 SQL；SQL 目标 / 键 / 模式的真实对应仍须可信实现审查。异常关闭上下文，owner 整事务回滚。每次 adapter 重新 assert_roots 或来源级 assert_source_locked；离开范围后保留端口失效。facade 无 cursor / connect / commit / rollback；真实 txid 不同即拒绝。它不是恶意 Python / SQL 沙箱，静态检查也不是物理网络隔离。
+acquire_lock 先检查当前步骤、接口允许层、预选模式和锁序，再执行借用事务 SQL；SQL 目标 / 键 / 模式的真实对应仍须可信实现审查。异常关闭上下文，owner 整事务回滚。每次 adapter 重新 assert_roots 或来源级 assert_source_locked，并创建独立借用对象；离开范围后保留端口失效，也不能因后续 adapter 进入而重新生效（有回归反例）。facade 无 cursor / connect / commit / rollback；真实 txid 不同即拒绝。它不是恶意 Python / SQL 沙箱，静态检查也不是物理网络隔离。
 
 控制 DTO 为后续 DDL 提供列清单，尚未创建业务表：完整主键；availability_version 与永久撤回 epoch 分离；原因清除后保留位置 / 时间；hold 保存每次冲突类型 / 时刻与预算、关闭依据；同账号 / 原因未关闭部分唯一；每 hold 至多一在途回访；handoff / 多条 gap / 账号快照独立表。永久撤回只 doc / account，source 只有临时读门控；大纲 §4.3 的 source 泛称按 §4.12 / 总册明确锁语义解释，变更须版本化。
 
@@ -100,7 +100,7 @@ rtk git diff --check
 
 PG 实验包括：同 backend / txid；独立 observer 提交前不可见、提交后可见；显式异常整事务回滚无残留；COMMIT / BEGIN / SAVEPOINT / ROLLBACK 和多语句拒绝；不活动 / 新事务无法复用旧 facade；超行数预算失效；服务器原始 SQL / 参数不回显。只验证受限基础端口，不计为 I5 业务实现。
 
-最终完整 **make check：572 passed / 48 deselected，10.54 秒，收集 620 项**；包含全部第二批 94 项。schema 检查为历史 3 + 第一批 29 + 第二批 41；第一批目录 git diff 为空。八条导入边界、迁移 1 revision、连接器静态门禁通过；新事务适配器静态门禁明确输出 0 implementation files。26 个新 Python 文件的 AI header / AST、150 个函数 docstring、8 个相关 Markdown 的本地链接与 git diff --check 均通过。
+最终完整 **make check：572 passed / 48 deselected，10.35 秒，收集 620 项**；包含全部第二批 94 项。最后补强“旧借用不能在后续调用复活”后，专用真实 PG 9 项再次通过（0.40 秒）。schema 检查为历史 3 + 第一批 29 + 第二批 41；第一批目录 git diff 为空。八条导入边界、迁移 1 revision、连接器静态门禁通过；新事务适配器静态门禁明确输出 0 implementation files。26 个新 Python 文件的 AI header / AST、150 个函数 docstring、8 个相关 Markdown 的本地链接与 git diff --check 均通过。
 
 本机首次未提权 uv 触发 macOS SystemConfiguration 空对象 panic；以现有许可在沙箱外运行后测试正常，不把崩溃说成测试失败或跳过。没有变更依赖、锁文件、Compose、迁移或 CI 拓扑；Kafka / isolation 在 PR 的实际 CI 验证，不把本地未重跑说成通过。
 
