@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架与 M0-02 七项技术验证已交付，本轮进入 **M0-03 第一批正式契约**：执行上下文、受控传输、FetchPage / 条目结果、状态错误与 ID 派生输入。任务编排、实际采集、证据、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架、M0-02 七项技术验证及第一批契约，本轮完成 **M0-04 第二批契约工程基线**：结果包、提交 / 控制 / 状态协议、共享语义摘要、运行时签名和同事务上下文。任务编排、实际采集、证据业务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -56,7 +56,7 @@ make test-jcs       # 离线重放 RFC 向量与输入边界；也包含在 make
 
 锁定 `rfc8785 0.1.4`，内部原型输出 JCS UTF-8 字节与完整输入值的 SHA-256。对象键递归按 UTF-16 排序，数组顺序和 Unicode 形式保留；严格文本入口拒绝重复键、非法 Unicode、非有限数值与非 UTF-8 编码。
 
-Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。当前未实现语义包字段投影、签名、证据身份或回执。方案与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
+Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。语义包投影与签名现已在第二批实现；证据身份解析和实际回执持久化尚未实现。早期选型与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
 
 ## CEL 规则验证
 
@@ -78,7 +78,7 @@ make measure-contract-matrix # 全量维度扫描和耗时；不是 H11 业务�
 
 采用 HTTP/JSON，复用既有依赖。`contracts/tooling.py` 提供严格字节解码与字段元数据原型；测试模型只导出到 `contracts/schemas/probes/`，`make check` 比对漂移。修改模型后可显式 `make schema-write`，审查生成 diff 后通过 PR。
 
-未知枚举保持原始字符串，墓碑载荷经真实 HTTP 往返仍保留；重复键、非法编码和结构损坏明确失败。探针端点仅在测试 app，正式 API 不开放它。正式 FetchPage 已在下述第一批契约提供；控制提交和签名按后续阶段实现。
+未知枚举保持原始字符串，墓碑载荷经真实 HTTP 往返仍保留；重复键、非法编码和结构损坏明确失败。探针端点仅在测试 app，正式 API 不开放它。正式 FetchPage 已在下述第一批契约提供；签名及独立控制校验见第二批，实际控制提交待运行时接线。
 
 当前维度轮廓全量 3,317,760 个组合，显式排除后扫描 2,488,320 个；耗时只含扫描和未知值检查，不代表完整决策表。方案、数值域发现及 CI 策略见 [ADR 0006](docs/decisions/0006-contract-toolchain.md)、[实测记录](docs/validation/m0-02e-matrix-scan.json) 和 [dev_memory](dev_memory/2026-10-30-m0-02e-contract-toolchain.md)。
 
@@ -86,12 +86,26 @@ make measure-contract-matrix # 全量维度扫描和耗时；不是 H11 业务�
 
 ```bash
 make test-first-contracts # 模式权限、FetchPage、传输边界、ID 输入与真实 HTTP 往返
-make schema-check         # 同时检查 29 份正式 v1 schema 和 3 份历史探针 schema
+make schema-check         # 检查第一批 29、第二批 41 和历史探针 3 份 schema
 ```
 
 正式模型位于 `contracts/`，接口位于 `spi/transport.py`，SDK 层组合具体消息类型，保持独立叶子边界。接收 Worker 页面必须用 `decode_wire(FetchPageWire, bytes)`，未知状态 / 条目结果和控制载荷原样保留；构造侧才使用严格枚举的 `FetchPage`。所有数字计数限定 JCS 安全范围，外部游标使用字符串；切片导入强制 live / 正式空间 / manual_only，无外部读取。
 
-字段、缺省与调用规范见 [第一批契约 v1](docs/contracts/first-batch-v1.md)、[ADR 0009](docs/decisions/0009-first-contracts.md) 和 [dev_memory](dev_memory/2026-10-31-m0-03-first-contracts.md)。本轮是接口与校验工程基线，没有生产传输服务或提交成功回执；完整结果包、摘要投影 / 签名、独立控制校验与事务上下文属于 M0-04，实际运行时 / SDK / 连接器接线随后开发。
+字段、缺省与调用规范见 [第一批契约 v1](docs/contracts/first-batch-v1.md)、[ADR 0009](docs/decisions/0009-first-contracts.md) 和 [dev_memory](dev_memory/2026-10-31-m0-03-first-contracts.md)。第一批是接口与校验基线，没有生产传输服务或提交持久化；完整包与签名已在下述 M0-04 实现，实际运行时 / SDK / 连接器接线随后开发。
+
+## 第二批正式契约
+
+```bash
+make test-second-contracts # 结果包 / 控制 / 状态、摘要签名与事务守卫反例
+make schema-check          # 3 + 29 + 41 份 schema，第一批快照保持不变
+# 显式专用 TEST_DATABASE_URL 下，make test-integration 包含真实同事务实验
+```
+
+`sdk.semantic_bundle` 与平台共享严格字段投影 / JCS / SHA-256；仅排除提交外层 lease_token，稳定身份、控制、剔除和早期段摘要全参与。运行时专用 HMAC 绑定完整任务 / 模式 / 代次 / 配置 / 根 / 控制，SDK 不持密钥。独立逐项控制校验可在未知页面枚举时保留合法控制；材料准备仅检查 V1 / V19，完整决策表、引用和 Claim 载荷验证仍待后续。
+
+同事务上下文明确 I5 / I7 / I9 / I10 / I21 的步骤、根和来源锁；PG facade 只借已有事务，不提供提交 / 回滚或连接工厂。真实 PG 测试证明同事务 identity、提交前不可见、回滚无残留和过期借用失效；业务适配器、13 步实际写入、I8 注册与 I17 / I19 服务尚未实现。
+
+字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。下一项 M0-05 是首个文件一页 → 提交 → 检查点 → 事件的真实闭环。
 
 ## worker 隔离验证
 

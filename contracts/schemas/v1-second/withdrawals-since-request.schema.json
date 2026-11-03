@@ -1,0 +1,37 @@
+{
+  "$defs": {
+    "PositiveCount": {
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "进程经运行时 API 按序拉 PG 日志，不直连数据库。",
+  "properties": {
+    "after": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "limit": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "after",
+    "limit"
+  ],
+  "title": "WithdrawalsSinceRequest",
+  "type": "object"
+}

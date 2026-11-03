@@ -5,12 +5,12 @@
 from datetime import datetime
 import math
 import unicodedata
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import AfterValidator, ConfigDict, Field, JsonValue, model_validator
 from pydantic_core import PydanticUndefined
 
-from contracts.tooling import WireModel, field_metadata
+from contracts.tooling import WireDecodeError, WireModel, field_metadata
 
 
 MAX_SAFE_INTEGER = 2**53 - 1
@@ -37,9 +37,9 @@ type Sha256 = Annotated[str, Field(pattern=r"^sha256:[0-9a-f]{64}$")]
 type UtcTimestamp = Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$"), AfterValidator(_utc_time)]
 
 
-def contract_field(default=PydanticUndefined, *, default_factory=None, semantics: str = "required", routable: bool = False, **constraints):
-    """所有正式字段集中声明摘要 / 缺省 / 路由政策；本批无摘要排除字段。"""
-    return Field(default=default, default_factory=default_factory, json_schema_extra=field_metadata(digest="include", default_semantics=semantics, routable=routable), **constraints)
+def contract_field(default=PydanticUndefined, *, default_factory=None, semantics: str = "required", routable: bool = False, digest: Literal["include", "exclude"] = "include", **constraints):
+    """集中声明字段政策；投影另按固定路径白名单校验 exclude，不允许调用方扩展。"""
+    return Field(default=default, default_factory=default_factory, json_schema_extra=field_metadata(digest=digest, default_semantics=semantics, routable=routable), **constraints)
 
 
 def check_json_value(value: object) -> None:
@@ -70,6 +70,16 @@ class ContractModel(WireModel):
         """覆盖嵌套扩展载荷；它们不能偷偷引入 JCS 不安全的数字。"""
         check_json_value(self.model_dump(mode="python"))
         return self
+
+
+def validated_snapshot[Model: ContractModel](model: type[Model], value: Model) -> Model:
+    """原生值重新校验，防止 frozen 内的可变容器和 JSON 序列化把 NaN 改成 null。"""
+    try:
+        if type(value) is not model:
+            raise TypeError("Expected exact contract type")
+        return model.model_validate(value.model_dump(mode="python"), strict=True)
+    except (ValueError, TypeError, RecursionError):
+        raise WireDecodeError("Invalid contract snapshot") from None
 
 
 class StableReference(ContractModel):

@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "RetirementEvidence": {
+      "additionalProperties": false,
+      "description": "核对形状不能替代 cgroup / 卷的实际证据验证；无法核对保持 pending。",
+      "properties": {
+        "basis_ref": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "caches_cleared": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Caches Cleared",
+          "type": "boolean"
+        },
+        "process_terminated": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Process Terminated",
+          "type": "boolean"
+        },
+        "verified_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "verifier_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "verifier_role": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "supervisor",
+            "operations"
+          ],
+          "routable": false,
+          "title": "Verifier Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "process_terminated",
+        "caches_cleared",
+        "verifier_role",
+        "verifier_id",
+        "basis_ref",
+        "verified_at"
+      ],
+      "title": "RetirementEvidence",
+      "type": "object"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "监督器 / 运维按同一流程退役；身份由服务认证，不能相信自报角色。",
+  "properties": {
+    "evidence": {
+      "$ref": "#/$defs/RetirementEvidence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_group_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "process_instance_id",
+    "process_group_id",
+    "evidence"
+  ],
+  "title": "ReportRetired",
+  "type": "object"
+}

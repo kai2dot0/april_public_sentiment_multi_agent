@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "DerivedWrite": {
+      "additionalProperties": false,
+      "description": "派生索引只能经声明屏障的门面执行，载荷全量纳入摘要。",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Payload",
+          "type": "object"
+        },
+        "payload_schema": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "store": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "vector",
+            "fulltext",
+            "fingerprint"
+          ],
+          "routable": false,
+          "title": "Store",
+          "type": "string"
+        }
+      },
+      "required": [
+        "store",
+        "key",
+        "payload_schema",
+        "payload",
+        "roots"
+      ],
+      "title": "DerivedWrite",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "JsonValue": {},
+    "RootSources": {
+      "additionalProperties": false,
+      "description": "普通内容写入根集合只含文档 / 账号；来源级记录走单独持锁断言。",
+      "properties": {
+        "objects": {
+          "default_semantics": "absent expands to empty declared root set; runtime must independently resolve lineage",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlObjectRef"
+          },
+          "routable": false,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "title": "RootSources",
+      "type": "object"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "I10 第十步按表 / 业务键排序执行带完整根来源的派生写。",
+  "properties": {
+    "writes": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/DerivedWrite"
+      },
+      "routable": false,
+      "title": "Writes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "writes"
+  ],
+  "title": "DerivedMutation",
+  "type": "object"
+}

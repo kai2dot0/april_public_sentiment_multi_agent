@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "比较基准固定在来源配置锁，不允许各信号或事件对自行切换。",
+  "properties": {
+    "comparison_basis": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "upstream_event_time",
+        "authority_position",
+        "commit_order"
+      ],
+      "routable": false,
+      "title": "Comparison Basis",
+      "type": "string"
+    },
+    "configuration": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "source_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "upstream_clock_skew_ms": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SafeCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means clock skew is unknown",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "source_id",
+    "configuration",
+    "comparison_basis"
+  ],
+  "title": "SourceControlPolicy",
+  "type": "object"
+}

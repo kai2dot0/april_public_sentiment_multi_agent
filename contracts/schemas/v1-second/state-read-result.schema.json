@@ -1,0 +1,134 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "JsonValue": {},
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "RootSources": {
+      "additionalProperties": false,
+      "description": "普通内容写入根集合只含文档 / 账号；来源级记录走单独持锁断言。",
+      "properties": {
+        "objects": {
+          "default_semantics": "absent expands to empty declared root set; runtime must independently resolve lineage",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlObjectRef"
+          },
+          "routable": false,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "title": "RootSources",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "missing / forbidden / unsupported 不冒充成功空状态，null 可是实际值。",
+  "properties": {
+    "roots": {
+      "$ref": "#/$defs/RootSources",
+      "default_semantics": "absent expands to empty provenance set",
+      "digest": "include",
+      "routable": false
+    },
+    "status": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "found",
+        "missing",
+        "forbidden",
+        "unsupported"
+      ],
+      "routable": false,
+      "title": "Status",
+      "type": "string"
+    },
+    "value": {
+      "$ref": "#/$defs/JsonValue",
+      "default": null,
+      "default_semantics": "absent expands to null; only found makes this a state value",
+      "digest": "include",
+      "routable": false
+    },
+    "version": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent unless a persisted state version was found",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "status"
+  ],
+  "title": "StateReadResult",
+  "type": "object"
+}

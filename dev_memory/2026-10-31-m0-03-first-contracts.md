@@ -123,3 +123,7 @@ M0-05 / 06 接运行时、SDK、文件连接器、证据、真实 I4 / 注册 / 
 本模块 [PR #9](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/9)，实现提交 `edd68e3`。本次 PR 关联补记也进入同一功能分支，合并前须重新检查最终 head 的 checks / infrastructure / isolation 三项全成功；最终受检提交、CI run 和 merge SHA 以 PR 实际交付记录为准，不能挪用旧 head 的绿灯。上一模块 PR #8 的实际 merge / CI 证据已补原 G memory；本轮不直接提交或推送 main。
 
 本轮发现全局 gh 默认用户为 kylechandev，未修改该默认设置；仓库操作按已有授权仅在子进程中使用 kai2dot0 的现有 keyring 凭据，不打印 / 写盘凭据，不重新申请权限。
+
+### 后续补记：实际合并证据
+
+PR #9 最终受检 head `dbebe01f216838a6b3b140b50d8c6d829d48dbb5`；[CI run 41163102211](https://github.com/kai2dot0/april_public_sentiment_multi_agent/actions/runs/41163102211) 的 checks（51 秒）、infrastructure（1 分 34 秒）、isolation（44 秒）全部成功。2026-10-31T03:11:34Z squash merge 为 `c553e134b9d3655da6170920dbb205fbb948d6ca`，M0-04 从该 main 起步。该记录仅确认第一批交付，不替代后续模块最终 head 的检查。

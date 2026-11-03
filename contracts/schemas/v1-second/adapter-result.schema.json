@@ -1,0 +1,40 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "调用结果不等于事务已提交；owner 提交前不能对外返回业务成功。",
+  "properties": {
+    "already_applied_ids": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Already Applied Ids",
+      "type": "array"
+    },
+    "applied_ids": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Applied Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "applied_ids",
+    "already_applied_ids"
+  ],
+  "title": "AdapterResult",
+  "type": "object"
+}

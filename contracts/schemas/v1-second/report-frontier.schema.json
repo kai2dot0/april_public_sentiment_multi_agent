@@ -1,0 +1,44 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "回报的是缓存应用完成后的连续处理前沿，不是拉取 / 收到的最大值。",
+  "properties": {
+    "continuous_processed_frontier": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "registration_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "registration_id",
+    "process_instance_id",
+    "continuous_processed_frontier"
+  ],
+  "title": "ReportFrontier",
+  "type": "object"
+}

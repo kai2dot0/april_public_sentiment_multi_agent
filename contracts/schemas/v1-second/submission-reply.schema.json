@@ -1,0 +1,496 @@
+{
+  "$defs": {
+    "ConflictReason": {
+      "enum": [
+        "digest_mismatch",
+        "lease_lost",
+        "control_epoch_changed",
+        "state_version_changed",
+        "segment_frontier_mismatch"
+      ],
+      "type": "string"
+    },
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Namespace": {
+      "additionalProperties": false,
+      "description": "命名空间的名称与正式 / 隔离属性均由平台解析，不由 Agent 决定。",
+      "properties": {
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "formal",
+            "isolated"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "Namespace",
+      "type": "object"
+    },
+    "PermanentEpoch": {
+      "additionalProperties": false,
+      "description": "只记录永久撤回代次；临时 availability 版本不得用于提交冲突比较。",
+      "properties": {
+        "epoch": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "target",
+        "epoch"
+      ],
+      "title": "PermanentEpoch",
+      "type": "object"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "RetryAfterReason": {
+      "enum": [
+        "pg_admission",
+        "blob_condemned"
+      ],
+      "type": "string"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StateAddress": {
+      "additionalProperties": false,
+      "description": "状态完整地址不依赖进程缓存或调用方隐式租户。",
+      "properties": {
+        "agent_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "key": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "namespace": {
+          "$ref": "#/$defs/Namespace",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "agent_id",
+        "key"
+      ],
+      "title": "StateAddress",
+      "type": "object"
+    },
+    "StateVersion": {
+      "additionalProperties": false,
+      "description": "状态冲突返回最新版本，零代表不存在；不自动重用旧值。",
+      "properties": {
+        "address": {
+          "$ref": "#/$defs/StateAddress",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "address",
+        "version"
+      ],
+      "title": "StateVersion",
+      "type": "object"
+    },
+    "SubmissionOutcome": {
+      "discriminator": {
+        "mapping": {
+          "conflict": "#/$defs/SubmitConflict",
+          "receipt": "#/$defs/SubmitReceipt",
+          "rejected": "#/$defs/SubmitRejected",
+          "retry_after": "#/$defs/SubmitRetryAfter",
+          "unsupported": "#/$defs/UnsupportedCheckpoint"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SubmitReceipt"
+        },
+        {
+          "$ref": "#/$defs/SubmitConflict"
+        },
+        {
+          "$ref": "#/$defs/SubmitRetryAfter"
+        },
+        {
+          "$ref": "#/$defs/SubmitRejected"
+        },
+        {
+          "$ref": "#/$defs/UnsupportedCheckpoint"
+        }
+      ]
+    },
+    "SubmitConflict": {
+      "additionalProperties": false,
+      "description": "前沿不匹配规范化为 conflict 原因；SDK 继续使用第一批处理表。",
+      "properties": {
+        "diagnostic_code": {
+          "anyOf": [
+            {
+              "const": "checkpoint_version_changed",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent unless a checkpoint-only CAS conflict caused lease loss",
+          "digest": "include",
+          "routable": false,
+          "title": "Diagnostic Code"
+        },
+        "kind": {
+          "const": "conflict",
+          "default": "conflict",
+          "default_semantics": "absent expands to conflict",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "latest_control_epochs": {
+          "default_semantics": "absent unless control epoch changed",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/PermanentEpoch"
+          },
+          "routable": false,
+          "title": "Latest Control Epochs",
+          "type": "array"
+        },
+        "latest_state_versions": {
+          "default_semantics": "absent unless state version changed",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/StateVersion"
+          },
+          "routable": false,
+          "title": "Latest State Versions",
+          "type": "array"
+        },
+        "lease_retained": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Lease Retained",
+          "type": "boolean"
+        },
+        "reason": {
+          "$ref": "#/$defs/ConflictReason",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reason",
+        "lease_retained"
+      ],
+      "title": "SubmitConflict",
+      "type": "object"
+    },
+    "SubmitReceipt": {
+      "additionalProperties": false,
+      "description": "普通回执不是控制投影回执；complete 结束任务，checkpoint 保持租约态。",
+      "properties": {
+        "kind": {
+          "const": "receipt",
+          "default": "receipt",
+          "default_semantics": "absent expands to receipt outcome",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "operation": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "complete",
+            "checkpoint"
+          ],
+          "routable": false,
+          "title": "Operation",
+          "type": "string"
+        },
+        "receipt_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "database receipt identity is not semantic content",
+          "digest": "exclude",
+          "routable": false
+        },
+        "segment_no": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "semantic_bundle_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "task_status": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "leased",
+            "completed",
+            "completed_violation",
+            "skipped_withdrawn"
+          ],
+          "routable": false,
+          "title": "Task Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "receipt_id",
+        "task_id",
+        "operation",
+        "segment_no",
+        "semantic_bundle_digest",
+        "task_status"
+      ],
+      "title": "SubmitReceipt",
+      "type": "object"
+    },
+    "SubmitRejected": {
+      "additionalProperties": false,
+      "description": "外层结构 / 鉴权 / 完整性拒绝，不能映射为页面违规的成功回执。",
+      "properties": {
+        "kind": {
+          "const": "rejected",
+          "default": "rejected",
+          "default_semantics": "absent expands to rejected",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "invalid_bundle",
+            "authentication_failed",
+            "integrity_failed",
+            "control_not_allowed",
+            "unsupported_payload_schema"
+          ],
+          "routable": false,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "title": "SubmitRejected",
+      "type": "object"
+    },
+    "SubmitRetryAfter": {
+      "additionalProperties": false,
+      "description": "不计失败，原逻辑包重提；blob 重上传在计算 / 提交事务外进行。",
+      "properties": {
+        "kind": {
+          "const": "retry_after",
+          "default": "retry_after",
+          "default_semantics": "absent expands to retry_after",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "$ref": "#/$defs/RetryAfterReason",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "retry_after_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reason",
+        "retry_after_ms"
+      ],
+      "title": "SubmitRetryAfter",
+      "type": "object"
+    },
+    "UnsupportedCheckpoint": {
+      "additionalProperties": false,
+      "description": "Demo 明确不支持 Worker checkpoint，不产生分段持久化或完成回执。",
+      "properties": {
+        "kind": {
+          "const": "unsupported",
+          "default": "unsupported",
+          "default_semantics": "absent expands to unsupported",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "operation": {
+          "const": "checkpoint",
+          "default": "checkpoint",
+          "default_semantics": "absent means worker checkpoint operation",
+          "digest": "include",
+          "routable": false,
+          "title": "Operation",
+          "type": "string"
+        },
+        "reason": {
+          "const": "worker_checkpoint_disabled",
+          "default": "worker_checkpoint_disabled",
+          "default_semantics": "absent means Demo capability is disabled",
+          "digest": "include",
+          "routable": false,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "title": "UnsupportedCheckpoint",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "HTTP/JSON 结局统一封装；没有裸 dict 或默认成功空结果。",
+  "properties": {
+    "outcome": {
+      "$ref": "#/$defs/SubmissionOutcome",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "outcome"
+  ],
+  "title": "SubmissionReply",
+  "type": "object"
+}

@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "LockStageName": {
+      "enum": [
+        "TASK",
+        "KEY_OCCUPANCY",
+        "CONTROL_OBJECT",
+        "SOURCE_CONTROL",
+        "HANDOFF_SNAPSHOT",
+        "WITHDRAWAL_COUNTER",
+        "BLOB",
+        "LOGICAL_OBJECT",
+        "CORE_STATE",
+        "OBSERVATION",
+        "TIMER",
+        "DERIVED_WRITE",
+        "SEQUENCE_COUNTER",
+        "JOB_CHECKPOINT"
+      ],
+      "type": "string"
+    },
+    "RowLockName": {
+      "enum": [
+        "KEY_SHARE",
+        "SHARE",
+        "NO_KEY_UPDATE",
+        "UPDATE"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "预先选择最强模式；key 为层内规范排序键，而不是任意 SQL。",
+  "properties": {
+    "key": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "minItems": 1,
+      "routable": false,
+      "title": "Key",
+      "type": "array"
+    },
+    "mode": {
+      "$ref": "#/$defs/RowLockName",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "stage": {
+      "$ref": "#/$defs/LockStageName",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "stage",
+    "key",
+    "mode"
+  ],
+  "title": "LockRequirement",
+  "type": "object"
+}

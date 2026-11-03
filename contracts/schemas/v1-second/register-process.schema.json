@@ -1,0 +1,184 @@
+{
+  "$defs": {
+    "CacheClearance": {
+      "additionalProperties": false,
+      "description": "证据引用由可信监督器核对，不能仅凭一个布尔值获得注册资格。",
+      "properties": {
+        "evidence_ref": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "process_group_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "verified_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "process_group_id",
+        "evidence_ref",
+        "verified_at"
+      ],
+      "title": "CacheClearance",
+      "type": "object"
+    },
+    "CacheDeclaration": {
+      "additionalProperties": false,
+      "description": "受监督器管理的目录身份；不是 Worker 自选的任意宿主路径。",
+      "properties": {
+        "cache_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "managed_location_ref": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "cache_id",
+        "managed_location_ref"
+      ],
+      "title": "CacheDeclaration",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "缓存清空后以当前权威前沿注册，成功之前不得 lease / 启用缓存钩子。",
+  "properties": {
+    "caches": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/CacheDeclaration"
+      },
+      "routable": false,
+      "title": "Caches",
+      "type": "array"
+    },
+    "clearance": {
+      "$ref": "#/$defs/CacheClearance",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "initial_frontier": {
+      "$ref": "#/$defs/WithdrawalSequence",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "namespace": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_group_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "process_instance_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "role": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "agent",
+        "connector",
+        "normalizer",
+        "platform_cache"
+      ],
+      "routable": false,
+      "title": "Role",
+      "type": "string"
+    },
+    "tenant_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "tenant_id",
+    "namespace",
+    "process_instance_id",
+    "process_group_id",
+    "role",
+    "caches",
+    "initial_frontier",
+    "clearance"
+  ],
+  "title": "RegisterProcess",
+  "type": "object"
+}

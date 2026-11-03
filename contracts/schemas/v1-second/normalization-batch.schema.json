@@ -1,0 +1,407 @@
+{
+  "$defs": {
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "DocumentIdentity": {
+      "additionalProperties": false,
+      "description": "稳定来源身份，原生 ID 含作者信息时使用按租户 / 来源的键控哈希。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "native_id_hash": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "platform": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "namespace",
+        "platform",
+        "native_id_hash"
+      ],
+      "title": "DocumentIdentity",
+      "type": "object"
+    },
+    "EvidenceCreation": {
+      "additionalProperties": false,
+      "description": "仅提交事务内首次创建的三类；上传准备在计算段之前完成。",
+      "properties": {
+        "byte_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "source_content",
+            "statistic",
+            "rule_decision"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "parent_evidence": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/StableReference"
+          },
+          "routable": false,
+          "title": "Parent Evidence",
+          "type": "array"
+        },
+        "reference": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reference",
+        "kind",
+        "byte_digest",
+        "parent_evidence",
+        "roots"
+      ],
+      "title": "EvidenceCreation",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "JsonValue": {},
+    "LogicalWrite": {
+      "additionalProperties": false,
+      "description": "Claim / 事件 / 标准文档的稳定引用、钉定载荷 schema 与根来源。",
+      "properties": {
+        "payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Payload",
+          "type": "object"
+        },
+        "payload_schema": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "reference": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "reference",
+        "payload_schema",
+        "payload",
+        "roots"
+      ],
+      "title": "LogicalWrite",
+      "type": "object"
+    },
+    "NonWithdrawalRecord": {
+      "additionalProperties": false,
+      "description": "exited_query 不追溯历史统计，不能借控制记录调用永久撤回。",
+      "properties": {
+        "kind": {
+          "const": "exited_query",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/DocumentIdentity",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "observed_at"
+      ],
+      "title": "NonWithdrawalRecord",
+      "type": "object"
+    },
+    "ObservedRelation": {
+      "additionalProperties": false,
+      "description": "推断关系不能写入传播边，只允许 observed 依据。",
+      "properties": {
+        "basis": {
+          "const": "observed",
+          "default": "observed",
+          "default_semantics": "absent means directly observed relation, never inferred",
+          "digest": "include",
+          "routable": false,
+          "title": "Basis",
+          "type": "string"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "relation_type": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "reply_to",
+            "quotes",
+            "reposts",
+            "links_to",
+            "mentions"
+          ],
+          "routable": false,
+          "title": "Relation Type",
+          "type": "string"
+        },
+        "status": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "active",
+            "target_missing",
+            "withdrawn"
+          ],
+          "routable": false,
+          "title": "Status",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/DocumentIdentity",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "relation_type",
+        "target",
+        "observed_at",
+        "status"
+      ],
+      "title": "ObservedRelation",
+      "type": "object"
+    },
+    "RootSources": {
+      "additionalProperties": false,
+      "description": "普通内容写入根集合只含文档 / 账号；来源级记录走单独持锁断言。",
+      "properties": {
+        "objects": {
+          "default_semantics": "absent expands to empty declared root set; runtime must independently resolve lineage",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlObjectRef"
+          },
+          "routable": false,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "title": "RootSources",
+      "type": "object"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "仅输出意图，来源正文在 normalizer 自己的 complete 内首次创建。",
+  "properties": {
+    "control_records": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/NonWithdrawalRecord"
+      },
+      "routable": false,
+      "title": "Control Records",
+      "type": "array"
+    },
+    "documents": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/LogicalWrite"
+      },
+      "routable": false,
+      "title": "Documents",
+      "type": "array"
+    },
+    "engagement_observations": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "additionalProperties": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "type": "object"
+      },
+      "routable": false,
+      "title": "Engagement Observations",
+      "type": "array"
+    },
+    "observed_relations": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/ObservedRelation"
+      },
+      "routable": false,
+      "title": "Observed Relations",
+      "type": "array"
+    },
+    "source_evidence": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/EvidenceCreation"
+      },
+      "routable": false,
+      "title": "Source Evidence",
+      "type": "array"
+    }
+  },
+  "required": [
+    "documents",
+    "source_evidence",
+    "observed_relations",
+    "engagement_observations",
+    "control_records"
+  ],
+  "title": "NormalizationBatch",
+  "type": "object"
+}

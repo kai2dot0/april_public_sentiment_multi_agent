@@ -1,0 +1,1166 @@
+{
+  "$defs": {
+    "AccountStatusSignal": {
+      "additionalProperties": false,
+      "description": "只能设置 / 清除 account_inactive，不能清除 sync 或永久墓碑。",
+      "properties": {
+        "inactive": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Inactive",
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "account_status",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_configuration": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePosition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means position is unknown",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_event_identity": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_event_time": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UtcTimestamp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no trusted upstream event time",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "inactive",
+        "source_configuration",
+        "upstream_event_identity",
+        "observed_at"
+      ],
+      "title": "AccountStatusSignal",
+      "type": "object"
+    },
+    "AccountSyncSignal": {
+      "additionalProperties": false,
+      "description": "repo 重置仅设置对应 sync 代次，清扫解除另经平台控制入口。",
+      "properties": {
+        "cut_position": {
+          "$ref": "#/$defs/SourcePosition",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "kind": {
+          "const": "account_sync",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_configuration": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "sync_epoch": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_event_identity": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "verification_cut_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "sync_epoch",
+        "cut_position",
+        "verification_cut_at",
+        "source_configuration",
+        "upstream_event_identity",
+        "observed_at"
+      ],
+      "title": "AccountSyncSignal",
+      "type": "object"
+    },
+    "CallingPrincipal": {
+      "additionalProperties": false,
+      "description": "平台授予的调用主体描述；反序列化本身不赋予服务身份。",
+      "properties": {
+        "role": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "platform",
+            "agent",
+            "connector",
+            "normalizer",
+            "operations"
+          ],
+          "routable": false,
+          "title": "Role",
+          "type": "string"
+        },
+        "subject_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "subject_id",
+        "role"
+      ],
+      "title": "CallingPrincipal",
+      "type": "object"
+    },
+    "ControlCheck": {
+      "additionalProperties": false,
+      "description": "逐项结果只保存位置 / 固定原因和已通过的信号，不回显被拒载荷。",
+      "properties": {
+        "collection": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "tombstones",
+            "control_events"
+          ],
+          "routable": false,
+          "title": "Collection",
+          "type": "string"
+        },
+        "decision": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "accepted",
+            "invalid",
+            "forbidden"
+          ],
+          "routable": false,
+          "title": "Decision",
+          "type": "string"
+        },
+        "index": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent for accepted signal",
+          "digest": "include",
+          "routable": false
+        },
+        "signal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ControlSignal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent unless control structure and authorization both passed",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "collection",
+        "index",
+        "decision"
+      ],
+      "title": "ControlCheck",
+      "type": "object"
+    },
+    "ControlObjectRef": {
+      "additionalProperties": false,
+      "description": "完整控制身份；对象 ID 限键控 / 稳定身份，不能在此存原生作者明文。",
+      "properties": {
+        "namespace": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "scope": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "document",
+            "account",
+            "source"
+          ],
+          "routable": false,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "tenant_id",
+        "namespace",
+        "source_id",
+        "scope",
+        "object_id"
+      ],
+      "title": "ControlObjectRef",
+      "type": "object"
+    },
+    "ControlSignal": {
+      "discriminator": {
+        "mapping": {
+          "account_status": "#/$defs/AccountStatusSignal",
+          "account_sync": "#/$defs/AccountSyncSignal",
+          "tombstone": "#/$defs/Tombstone"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Tombstone"
+        },
+        {
+          "$ref": "#/$defs/AccountStatusSignal"
+        },
+        {
+          "$ref": "#/$defs/AccountSyncSignal"
+        }
+      ]
+    },
+    "ControlValidationReport": {
+      "additionalProperties": false,
+      "description": "签名内逐项控制结果；事务内的保守保持不是 V19 结构 / 权限违规。",
+      "properties": {
+        "checks": {
+          "default_semantics": "absent expands to empty control report",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlCheck"
+          },
+          "routable": false,
+          "title": "Checks",
+          "type": "array"
+        }
+      },
+      "title": "ControlValidationReport",
+      "type": "object"
+    },
+    "ExecutionContext": {
+      "additionalProperties": false,
+      "description": "平台构造的上下文数据；未来入口必须重新认证，不能信任 Worker 自报。",
+      "properties": {
+        "allowed_capabilities": {
+          "default_semantics": "required explicit capability set",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Allowed Capabilities",
+          "type": "array"
+        },
+        "allowed_pools": {
+          "default_semantics": "required explicit pool set",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Pool"
+          },
+          "routable": false,
+          "title": "Allowed Pools",
+          "type": "array"
+        },
+        "allowed_tools": {
+          "default_semantics": "required explicit tool set",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "caller": {
+          "$ref": "#/$defs/CallingPrincipal",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "external_reads": {
+          "default_semantics": "required explicit grants; empty means no external reads",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ExternalReadGrant"
+          },
+          "routable": false,
+          "title": "External Reads",
+          "type": "array"
+        },
+        "external_side_effects": {
+          "default_semantics": "required; still requires Manifest and platform authorization",
+          "digest": "include",
+          "routable": false,
+          "title": "External Side Effects",
+          "type": "boolean"
+        },
+        "input_origin": {
+          "default": "native",
+          "default_semantics": "absent means native execution, not an import",
+          "digest": "include",
+          "enum": [
+            "native",
+            "slice_import",
+            "slice_reproduction"
+          ],
+          "routable": false,
+          "title": "Input Origin",
+          "type": "string"
+        },
+        "mode": {
+          "$ref": "#/$defs/ExecutionMode",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": true
+        },
+        "policy_version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "publication_policy": {
+          "$ref": "#/$defs/PublicationPolicy",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "quotas": {
+          "default_semantics": "required; exactly one quota per allowed pool",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/PoolQuota"
+          },
+          "routable": false,
+          "title": "Quotas",
+          "type": "array"
+        },
+        "run_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": true
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "default_semantics": "absent expands to contract version 1.0.0",
+          "digest": "include",
+          "routable": false,
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_namespace": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent for native execution; imports retain original source namespace",
+          "digest": "include",
+          "routable": false
+        },
+        "state_namespace": {
+          "$ref": "#/$defs/Namespace",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": true
+        },
+        "visible_namespaces": {
+          "default_semantics": "required explicit visibility; empty grants no namespace",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Namespace"
+          },
+          "routable": false,
+          "title": "Visible Namespaces",
+          "type": "array"
+        }
+      },
+      "required": [
+        "tenant_id",
+        "caller",
+        "policy_version",
+        "run_id",
+        "mode",
+        "state_namespace",
+        "visible_namespaces",
+        "allowed_capabilities",
+        "allowed_tools",
+        "allowed_pools",
+        "quotas",
+        "publication_policy",
+        "external_reads",
+        "external_side_effects"
+      ],
+      "title": "ExecutionContext",
+      "type": "object"
+    },
+    "ExecutionMode": {
+      "enum": [
+        "live",
+        "replay",
+        "shadow",
+        "eval",
+        "backfill"
+      ],
+      "type": "string"
+    },
+    "ExternalReadGrant": {
+      "additionalProperties": false,
+      "description": "凭据只存范围引用；canary 只授权其他读取能力，不许可重新采集。",
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "credential_scope_ref": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent only for an explicit non-collector canary grant",
+          "digest": "include",
+          "routable": false
+        },
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "connector",
+            "canary"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "capability",
+        "source_id",
+        "credential_scope_ref"
+      ],
+      "title": "ExternalReadGrant",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Namespace": {
+      "additionalProperties": false,
+      "description": "命名空间的名称与正式 / 隔离属性均由平台解析，不由 Agent 决定。",
+      "properties": {
+        "kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "formal",
+            "isolated"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "Namespace",
+      "type": "object"
+    },
+    "PermanentEpoch": {
+      "additionalProperties": false,
+      "description": "只记录永久撤回代次；临时 availability 版本不得用于提交冲突比较。",
+      "properties": {
+        "epoch": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "target",
+        "epoch"
+      ],
+      "title": "PermanentEpoch",
+      "type": "object"
+    },
+    "Pool": {
+      "enum": [
+        "io",
+        "cpu",
+        "llm"
+      ],
+      "type": "string"
+    },
+    "PoolQuota": {
+      "additionalProperties": false,
+      "description": "显式配额，缺省不意味着无限额度。",
+      "properties": {
+        "max_bytes": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_concurrency": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_requests": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "pool": {
+          "$ref": "#/$defs/Pool",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "wall_timeout_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "pool",
+        "max_concurrency",
+        "max_requests",
+        "max_bytes",
+        "wall_timeout_ms"
+      ],
+      "title": "PoolQuota",
+      "type": "object"
+    },
+    "PositionDomain": {
+      "additionalProperties": false,
+      "description": "位置与排序域显式绑定来源、上游实例和游标语义版本。",
+      "properties": {
+        "cursor_semantics": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "ordering_domain": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_instance": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "source_id",
+        "upstream_instance",
+        "ordering_domain",
+        "cursor_semantics"
+      ],
+      "title": "PositionDomain",
+      "type": "object"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "PrunedWrite": {
+      "additionalProperties": false,
+      "description": "确定性剔除属于语义结果；控制信号不会随内容剔除而消失。",
+      "properties": {
+        "output_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "reason": {
+          "const": "source_permanently_withdrawn",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Reason",
+          "type": "string"
+        },
+        "roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "output_id",
+        "reason",
+        "roots"
+      ],
+      "title": "PrunedWrite",
+      "type": "object"
+    },
+    "PublicationPolicy": {
+      "enum": [
+        "automatic",
+        "manual_only"
+      ],
+      "type": "string"
+    },
+    "RootSources": {
+      "additionalProperties": false,
+      "description": "普通内容写入根集合只含文档 / 账号；来源级记录走单独持锁断言。",
+      "properties": {
+        "objects": {
+          "default_semantics": "absent expands to empty declared root set; runtime must independently resolve lineage",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlObjectRef"
+          },
+          "routable": false,
+          "title": "Objects",
+          "type": "array"
+        }
+      },
+      "title": "RootSources",
+      "type": "object"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "SourceLockRequirement": {
+      "additionalProperties": false,
+      "description": "来源控制行在文档 / 账号之后，不能作为普通写根或在读取后升级。",
+      "properties": {
+        "mode": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "SHARE",
+            "NO_KEY_UPDATE"
+          ],
+          "routable": false,
+          "title": "Mode",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "target",
+        "mode"
+      ],
+      "title": "SourceLockRequirement",
+      "type": "object"
+    },
+    "SourcePosition": {
+      "additionalProperties": false,
+      "description": "外部序号 / 时间 / 不透明游标均用字符串；禁止跨域直接比较。",
+      "properties": {
+        "domain": {
+          "$ref": "#/$defs/PositionDomain",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "value": {
+          "default_semantics": "required nonempty opaque cursor; preserve whitespace and exact UTF-8 text",
+          "digest": "include",
+          "minLength": 1,
+          "routable": false,
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "domain",
+        "value"
+      ],
+      "title": "SourcePosition",
+      "type": "object"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "TaskBinding": {
+      "additionalProperties": false,
+      "description": "运行时取得的当前任务绑定，不能使用 Worker 自报字段作为期望值。",
+      "properties": {
+        "configuration_lock": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "context": {
+          "$ref": "#/$defs/ExecutionContext",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "input_snapshot": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "key_epoch": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "lease_generation": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "task_id",
+        "context",
+        "lease_generation",
+        "key_epoch",
+        "configuration_lock",
+        "input_snapshot"
+      ],
+      "title": "TaskBinding",
+      "type": "object"
+    },
+    "Tombstone": {
+      "additionalProperties": false,
+      "description": "永久撤回请求不需要正文；目标状态已达成时不得重复递增代次。",
+      "properties": {
+        "confirmation_basis": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "kind": {
+          "const": "tombstone",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/UtcTimestamp",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "reason": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourcePosition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no comparable upstream position",
+          "digest": "include",
+          "routable": false
+        },
+        "source_version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "target": {
+          "$ref": "#/$defs/ControlObjectRef",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "upstream_event_identity": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "kind",
+        "target",
+        "reason",
+        "confirmation_basis",
+        "source_version",
+        "observed_at",
+        "upstream_event_identity"
+      ],
+      "title": "Tombstone",
+      "type": "object"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "ValidationMaterial": {
+      "additionalProperties": false,
+      "description": "绑定完整上下文、配置 / 策略 / 输入、操作前沿与永久控制前提。",
+      "properties": {
+        "after_segment": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "binding": {
+          "$ref": "#/$defs/TaskBinding",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "control_report": {
+          "$ref": "#/$defs/ControlValidationReport",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "operation": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "complete",
+            "checkpoint"
+          ],
+          "routable": false,
+          "title": "Operation",
+          "type": "string"
+        },
+        "pre_control_epochs": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/PermanentEpoch"
+          },
+          "routable": false,
+          "title": "Pre Control Epochs",
+          "type": "array"
+        },
+        "pruning_records": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/PrunedWrite"
+          },
+          "routable": false,
+          "title": "Pruning Records",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0.0",
+          "default": "1.0.0",
+          "default_semantics": "absent expands to validation-material version 1.0.0",
+          "digest": "include",
+          "routable": false,
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "segment_no": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "semantic_bundle_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "source_locks": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/SourceLockRequirement"
+          },
+          "routable": false,
+          "title": "Source Locks",
+          "type": "array"
+        },
+        "verified_roots": {
+          "$ref": "#/$defs/RootSources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "binding",
+        "operation",
+        "segment_no",
+        "after_segment",
+        "semantic_bundle_digest",
+        "verified_roots",
+        "pre_control_epochs",
+        "control_report",
+        "source_locks",
+        "pruning_records"
+      ],
+      "title": "ValidationMaterial",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "key_id 与算法一并进入签名域；没有签名密钥或 Worker 自报可信标志。",
+  "properties": {
+    "algorithm": {
+      "const": "HMAC-SHA256",
+      "default": "HMAC-SHA256",
+      "default_semantics": "absent expands to Demo HMAC-SHA256",
+      "digest": "include",
+      "routable": false,
+      "title": "Algorithm",
+      "type": "string"
+    },
+    "key_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "material": {
+      "$ref": "#/$defs/ValidationMaterial",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "signature": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "key_id",
+    "material",
+    "signature"
+  ],
+  "title": "SignedValidation",
+  "type": "object"
+}
