@@ -3,8 +3,9 @@
 """新输出 ID 的四元组输入规范；既有引用与修订不重新分配身份。"""
 
 import json
+import hashlib
 
-from contracts.primitives import ContractModel, Identifier, PositiveCount, SafeCount, contract_field
+from contracts.primitives import ContractModel, Identifier, PositiveCount, SafeCount, contract_field, validated_snapshot
 
 
 class IdDerivationInput(ContractModel):
@@ -20,3 +21,9 @@ def id_derivation_material(value: IdDerivationInput) -> bytes:
     """v1 域分隔 + UTF-8 紧凑 JSON 数组；四个元素只含字符串和安全整数。"""
     fields = [value.task_id, value.segment_no, value.output_kind, value.local_output_index]
     return b"april.output-id.v1\x00" + json.dumps(fields, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
+
+
+def derive_output_id(value: IdDerivationInput) -> str:
+    """SDK 与平台共享同一新输出 ID，已有对象 / 修订不重新派生。"""
+    value = validated_snapshot(IdDerivationInput, value)
+    return "out:sha256:" + hashlib.sha256(id_derivation_material(value)).hexdigest()

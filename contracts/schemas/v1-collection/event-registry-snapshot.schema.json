@@ -1,0 +1,156 @@
+{
+  "$defs": {
+    "AbsoluteUri": {
+      "maxLength": 8192,
+      "type": "string"
+    },
+    "EventSchema": {
+      "additionalProperties": false,
+      "description": "来自平台 registry 的受信描述，不能由 Worker 自报 contains_source_content。",
+      "properties": {
+        "content_kind": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "metadata",
+            "source_content"
+          ],
+          "routable": false,
+          "title": "Content Kind",
+          "type": "string"
+        },
+        "dataschema": {
+          "$ref": "#/$defs/AbsoluteUri",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "ordering": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "arrival",
+            "causal"
+          ],
+          "routable": false,
+          "title": "Ordering",
+          "type": "string"
+        },
+        "payload_schema": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "routable_attributes": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/RouteName"
+          },
+          "routable": false,
+          "title": "Routable Attributes",
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/$defs/EventType",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "type",
+        "dataschema",
+        "payload_schema",
+        "content_kind",
+        "ordering",
+        "routable_attributes"
+      ],
+      "title": "EventSchema",
+      "type": "object"
+    },
+    "EventType": {
+      "maxLength": 512,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9_.-]*\\.v[1-9][0-9]*$",
+      "type": "string"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "RouteName": {
+      "maxLength": 64,
+      "pattern": "^attr[a-z0-9]+$",
+      "type": "string"
+    },
+    "SemVer": {
+      "maxLength": 128,
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "可信 registry 内容连同版本一并哈希，不能只传自报版本字符串。",
+  "properties": {
+    "events": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/EventSchema"
+      },
+      "routable": false,
+      "title": "Events",
+      "type": "array"
+    },
+    "version": {
+      "$ref": "#/$defs/SemVer",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "version",
+    "events"
+  ],
+  "title": "EventRegistrySnapshot",
+  "type": "object"
+}

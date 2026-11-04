@@ -1,0 +1,1094 @@
+{
+  "$defs": {
+    "AbsoluteUri": {
+      "maxLength": 8192,
+      "type": "string"
+    },
+    "Backoff": {
+      "additionalProperties": false,
+      "description": "确定性退避参数，实际时间 / 失败预算由运行时持久化。",
+      "properties": {
+        "initial_ms": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "maximum_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "multiplier": {
+          "default_semantics": "required",
+          "digest": "include",
+          "minimum": 1,
+          "routable": false,
+          "title": "Multiplier",
+          "type": "number"
+        }
+      },
+      "required": [
+        "initial_ms",
+        "maximum_ms",
+        "multiplier"
+      ],
+      "title": "Backoff",
+      "type": "object"
+    },
+    "CachePolicy": {
+      "additionalProperties": false,
+      "description": "目录是监督器管理的相对缓存位置，不是宿主机任意绝对路径。",
+      "properties": {
+        "dirs": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Dirs",
+          "type": "array"
+        },
+        "max_ttl": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "milliseconds; zero disables retention",
+          "digest": "include",
+          "routable": false
+        },
+        "rebuildable": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Rebuildable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "rebuildable",
+        "dirs",
+        "max_ttl"
+      ],
+      "title": "CachePolicy",
+      "type": "object"
+    },
+    "ConnectorDeclaration": {
+      "additionalProperties": false,
+      "description": "来源协议和核验声明；资格证据由平台配置解析器提供。",
+      "properties": {
+        "capabilities": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "comparison_basis": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "upstream_event_time",
+            "authority_position",
+            "commit_order"
+          ],
+          "routable": false,
+          "title": "Comparison Basis",
+          "type": "string"
+        },
+        "compliance_ref": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "control_delivery_bound": {
+          "$ref": "#/$defs/TimingBound",
+          "default_semantics": "absent means unknown control delivery",
+          "digest": "include",
+          "routable": false
+        },
+        "credential_types": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Credential Types",
+          "type": "array"
+        },
+        "cursor_semantics": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "late_arrival_bound": {
+          "$ref": "#/$defs/TimingBound",
+          "default_semantics": "absent means unknown late arrival",
+          "digest": "include",
+          "routable": false
+        },
+        "maximum_staleness_ms": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeCount"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means freshness lower bound cannot be derived",
+          "digest": "include",
+          "routable": false
+        },
+        "observable_fields": {
+          "additionalProperties": {
+            "enum": [
+              "supported",
+              "unknown",
+              "not_supported"
+            ],
+            "type": "string"
+          },
+          "default_semantics": "required",
+          "digest": "include",
+          "propertyNames": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Observable Fields",
+          "type": "object"
+        },
+        "outbound_allowlist": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/ControlledUrl"
+          },
+          "routable": false,
+          "title": "Outbound Allowlist",
+          "type": "array"
+        },
+        "position_mappings": {
+          "default_semantics": "absent means no pinned mapping; references must include applicable intervals",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/StableReference"
+          },
+          "routable": false,
+          "title": "Position Mappings",
+          "type": "array"
+        },
+        "protocol_version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "revision_capability": {
+          "default": "unknown",
+          "default_semantics": "absent means unknown revision ordering",
+          "digest": "include",
+          "enum": [
+            "native_comparable",
+            "causal_cursor",
+            "unknown"
+          ],
+          "routable": false,
+          "title": "Revision Capability",
+          "type": "string"
+        },
+        "supports_required_continuity": {
+          "default": false,
+          "default_semantics": "absent means required continuity has not been established",
+          "digest": "include",
+          "routable": false,
+          "title": "Supports Required Continuity",
+          "type": "boolean"
+        },
+        "upstream_clock_skew_ms": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SafeCount"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means clock-skew bound is unknown",
+          "digest": "include",
+          "routable": false
+        },
+        "verification_basis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StableReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent means no pinned revisit verification basis",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "compliance_ref",
+        "capabilities",
+        "outbound_allowlist",
+        "credential_types",
+        "observable_fields",
+        "protocol_version",
+        "cursor_semantics",
+        "comparison_basis"
+      ],
+      "title": "ConnectorDeclaration",
+      "type": "object"
+    },
+    "ControlledUrl": {
+      "maxLength": 8192,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Emission": {
+      "additionalProperties": false,
+      "description": "partition_key_expr 在 v1 为路由属性名，避免引入任意执行表达式。",
+      "properties": {
+        "dataschema": {
+          "$ref": "#/$defs/AbsoluteUri",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "ordering": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "arrival",
+            "causal"
+          ],
+          "routable": false,
+          "title": "Ordering",
+          "type": "string"
+        },
+        "partition_key_expr": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "publication_policy_default": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicationPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "absent requires explicit versioned pool publication default",
+          "digest": "include",
+          "routable": false
+        },
+        "type": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "type",
+        "dataschema",
+        "ordering",
+        "partition_key_expr"
+      ],
+      "title": "Emission",
+      "type": "object"
+    },
+    "ExtensionScalar": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "type": "integer"
+        }
+      ]
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Implementation": {
+      "enum": [
+        "real",
+        "fake",
+        "null"
+      ],
+      "type": "string"
+    },
+    "MergePolicy": {
+      "additionalProperties": false,
+      "description": "无此声明时不合并；最大陈旧时间单位 milliseconds。",
+      "properties": {
+        "coalesce": {
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Coalesce",
+          "type": "boolean"
+        },
+        "max_staleness": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "max_staleness",
+        "coalesce"
+      ],
+      "title": "MergePolicy",
+      "type": "object"
+    },
+    "PackageRequirement": {
+      "additionalProperties": false,
+      "description": "版本范围原样登记，由后续包解析器展开为精确制品锁。",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version_range": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "name",
+        "version_range"
+      ],
+      "title": "PackageRequirement",
+      "type": "object"
+    },
+    "Pool": {
+      "enum": [
+        "io",
+        "cpu",
+        "llm"
+      ],
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "PublicationPolicy": {
+      "enum": [
+        "automatic",
+        "manual_only"
+      ],
+      "type": "string"
+    },
+    "Resources": {
+      "additionalProperties": false,
+      "description": "单位固定为 cpu=millicores、memory=bytes、wall_timeout=milliseconds。",
+      "properties": {
+        "cpu": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "memory": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "wall_timeout": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "cpu",
+        "memory",
+        "wall_timeout"
+      ],
+      "title": "Resources",
+      "type": "object"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "SemVer": {
+      "maxLength": 128,
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "StateMigration": {
+      "additionalProperties": false,
+      "description": "只钉定迁移制品，不在配置解析中导入或执行代码。",
+      "properties": {
+        "artifact_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "from_schema": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "to_schema": {
+          "$ref": "#/$defs/StableReference",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "from_schema",
+        "to_schema",
+        "artifact_digest"
+      ],
+      "title": "StateMigration",
+      "type": "object"
+    },
+    "Subscription": {
+      "additionalProperties": false,
+      "description": "v1 filter 为已登记路由属性的等值条件，不读取 data 或任意表达式。",
+      "properties": {
+        "filter": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ExtensionScalar"
+          },
+          "default_semantics": "absent expands to no subscription filter",
+          "digest": "include",
+          "propertyNames": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Filter",
+          "type": "object"
+        },
+        "partition_by": {
+          "default_semantics": "absent means no ordered-domain key",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Partition By",
+          "type": "array"
+        },
+        "requires_order": {
+          "default": "none",
+          "default_semantics": "absent means unordered consumption",
+          "digest": "include",
+          "enum": [
+            "none",
+            "arrival",
+            "causal"
+          ],
+          "routable": false,
+          "title": "Requires Order",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "Subscription",
+      "type": "object"
+    },
+    "TimerDeclaration": {
+      "additionalProperties": false,
+      "description": "声明周期意图，不代表活动定时表已经登记。",
+      "properties": {
+        "interval_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "name": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "name",
+        "interval_ms"
+      ],
+      "title": "TimerDeclaration",
+      "type": "object"
+    },
+    "TimingBound": {
+      "additionalProperties": false,
+      "description": "late arrival 与控制送达界分别实例化，unknown 不伪造数值。",
+      "properties": {
+        "event_types": {
+          "default_semantics": "absent means no covered event types",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Event Types",
+          "type": "array"
+        },
+        "kind": {
+          "default": "unknown",
+          "default_semantics": "absent means no usable bound",
+          "digest": "include",
+          "enum": [
+            "unknown",
+            "sla",
+            "guarantee"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveCount"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "milliseconds; absent only when kind is unknown",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "title": "TimingBound",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "完整声明字段；可空预算必须经显式部署 / 池缺省展开后才能启动。",
+  "properties": {
+    "acceptance_policy_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StableReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires inheritance before an Agent may produce Claims",
+      "digest": "include",
+      "routable": false
+    },
+    "artifact_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "backoff": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Backoff"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires pool backoff",
+      "digest": "include",
+      "routable": false
+    },
+    "cache": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CachePolicy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no declared cache",
+      "digest": "include",
+      "routable": false
+    },
+    "connector": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ConnectorDeclaration"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "required exactly for connector manifests",
+      "digest": "include",
+      "routable": false
+    },
+    "dead_letter": {
+      "default": true,
+      "default_semantics": "absent enables dead letter",
+      "digest": "include",
+      "routable": false,
+      "title": "Dead Letter",
+      "type": "boolean"
+    },
+    "domain_packs": {
+      "default_semantics": "absent declares no domain-pack dependencies",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/PackageRequirement"
+      },
+      "routable": false,
+      "title": "Domain Packs",
+      "type": "array"
+    },
+    "emits": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Emission"
+      },
+      "routable": false,
+      "title": "Emits",
+      "type": "array"
+    },
+    "evaluation_hooks": {
+      "default_semantics": "absent declares no evaluation hooks",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Evaluation Hooks",
+      "type": "array"
+    },
+    "flags_propagation": {
+      "default": "inherit",
+      "default_semantics": "absent inherits; explicit cannot clear mandatory flags",
+      "digest": "include",
+      "enum": [
+        "inherit",
+        "explicit"
+      ],
+      "routable": false,
+      "title": "Flags Propagation",
+      "type": "string"
+    },
+    "heartbeat_interval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "milliseconds; absent requires pool default",
+      "digest": "include",
+      "routable": false
+    },
+    "impl": {
+      "$ref": "#/$defs/Implementation",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "kind": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "agent",
+        "connector"
+      ],
+      "routable": false,
+      "title": "Kind",
+      "type": "string"
+    },
+    "knowledge_services": {
+      "default_semantics": "absent declares no knowledge dependencies",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Knowledge Services",
+      "type": "array"
+    },
+    "lease_ttl": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "milliseconds; absent requires pool default",
+      "digest": "include",
+      "routable": false
+    },
+    "max_attempts": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires pool attempt budget",
+      "digest": "include",
+      "routable": false
+    },
+    "max_batch": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PositiveCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires pool default; Demo resolves only one",
+      "digest": "include",
+      "routable": false
+    },
+    "merge": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MergePolicy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no coalescing",
+      "digest": "include",
+      "routable": false
+    },
+    "migrations": {
+      "default_semantics": "absent expands to no state migrations",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/StateMigration"
+      },
+      "routable": false,
+      "title": "Migrations",
+      "type": "array"
+    },
+    "name": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "owner": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "pool": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Pool"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires explicit deployment default_pool",
+      "digest": "include",
+      "routable": false
+    },
+    "predicates": {
+      "default_semantics": "absent declares no predicate dependencies",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/StableReference"
+      },
+      "routable": false,
+      "title": "Predicates",
+      "type": "array"
+    },
+    "priority": {
+      "anyOf": [
+        {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires explicit pool priority",
+      "digest": "include",
+      "routable": false,
+      "title": "Priority"
+    },
+    "quota_class": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires pool quota class",
+      "digest": "include",
+      "routable": false
+    },
+    "required_capabilities": {
+      "default_semantics": "absent declares no required capabilities",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Required Capabilities",
+      "type": "array"
+    },
+    "resources": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Resources"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires versioned pool resource defaults",
+      "digest": "include",
+      "routable": false
+    },
+    "retryable_classes": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires pool retry defaults",
+      "digest": "include",
+      "routable": false,
+      "title": "Retryable Classes"
+    },
+    "shed_policy": {
+      "anyOf": [
+        {
+          "enum": [
+            "never",
+            "deferrable",
+            "sheddable"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent requires pool shedding default",
+      "digest": "include",
+      "routable": false,
+      "title": "Shed Policy"
+    },
+    "side_effects": {
+      "default": "none",
+      "default_semantics": "absent grants no side-effect declaration; external writes are not enabled by this profile",
+      "digest": "include",
+      "enum": [
+        "none",
+        "internal_write",
+        "external_read"
+      ],
+      "routable": false,
+      "title": "Side Effects",
+      "type": "string"
+    },
+    "state_compare": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StableReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent only for stateless plugins",
+      "digest": "include",
+      "routable": false
+    },
+    "state_schema": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StableReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means stateless",
+      "digest": "include",
+      "routable": false
+    },
+    "subscribes": {
+      "default_semantics": "absent expands to no subscriptions",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Subscription"
+      },
+      "routable": false,
+      "title": "Subscribes",
+      "type": "array"
+    },
+    "supports_resume": {
+      "default": false,
+      "default_semantics": "absent means no job-checkpoint resume support",
+      "digest": "include",
+      "routable": false,
+      "title": "Supports Resume",
+      "type": "boolean"
+    },
+    "timers": {
+      "default_semantics": "absent means no timers",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/TimerDeclaration"
+      },
+      "routable": false,
+      "title": "Timers",
+      "type": "array"
+    },
+    "tools": {
+      "default_semantics": "absent declares no tools; still requires context grants",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Tools",
+      "type": "array"
+    },
+    "version": {
+      "$ref": "#/$defs/SemVer",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "artifact_digest",
+    "impl",
+    "owner",
+    "kind",
+    "emits"
+  ],
+  "title": "PluginManifest",
+  "type": "object"
+}

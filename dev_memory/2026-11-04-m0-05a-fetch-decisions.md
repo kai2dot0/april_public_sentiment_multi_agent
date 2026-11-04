@@ -114,3 +114,9 @@ rtk git diff --check
 本模块 [PR #11](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/11)，实现提交 `a89bf7a7a4874767ba86dfa8554851dee48c6ba3`。关联补记经同一功能分支提交；最终受检 head、CI run、artifact 与 merge 证据以 PR 实际交付记录为准，合并前须确认 checks / infrastructure / isolation 全成功及附件实际上传。PR #10 的实际最终 head / CI / merge 已补到原 memory，没有直接向 main 提交 / 推送。
 
 本轮重新发现 GitHub 连接器已暴露 PR 创建 / 合并能力并优先尝试，创建实际返回 integration 403（Resource not accessible by integration）；随后用已有 kai2dot0 凭据的 gh 后备成功创建 PR #11。本地推送亦沿该已有授权，不切换全局 gh 默认账号、不打印或落盘凭据、不重新申请权限。403 是连接器权限不足，不是自动审批拒绝。
+
+### 后续补记：实际合并证据
+
+PR #11 最终受检 head 为 `0a43d2c55351218ec8b5969a6922dd3797c10520`，[CI run 41787816530](https://github.com/kai2dot0/april_public_sentiment_multi_agent/actions/runs/41787816530) 的 checks / infrastructure / isolation 全部 success。checks 实际 724 passed / 48 deselected；完整矩阵 3,686,400 原始、921,600 排除、2,764,800 判定，108.796 秒。
+
+[fetch-decision-evidence 附件 13301847669](https://github.com/kai2dot0/april_public_sentiment_multi_agent/actions/runs/41787816530/artifacts/13301847669) 实际存在，ZIP 6,916,921 bytes，SHA-256 `64c37d3252b3e2f10be06ec9679f6adfb2ef46009d0889946141dcc314efc7da`，平台保留至 2026-11-18。PR 于 2026-11-04T06:51:47Z 合并，merge SHA `9d249312c7d25abc4419328e715478738d1c4be0`；本地 main 快进后 tree 与受检 head 相同（`fab2e0ce9eb470a0c2eab71720d3933f4e88d778`），工作区干净且与 origin/main 同步。本补记经 M0-05B 功能 PR 入库，没有直接提交 main。

@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架、M0-02 七项技术验证及两批契约已交付，本轮进入 **M0-05A 正式采集判定器**：18 行动作、19 条违规、完整组合验证与签名前重算。任务编排、实际采集、证据业务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架、M0-02 七项技术验证、两批契约与正式采集判定器已交付，本轮完成 **M0-05B 采集载荷与配置锁**：Manifest / 显式缺省、任务与输入冻结、证据身份、事件编解码及签名前具体绑定。任务编排、实际采集、证据业务服务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -120,6 +120,19 @@ uv run --locked python -m scripts.verify_fetch_decisions --ordinal 12345 # 重�
 正式矩阵判定 2,764,800 个可达组合，对照独立 oracle；所有动作和违规均覆盖。CI 每 PR 完整运行并保存 `fetch-decision-evidence` 附件 14 天，逐条包含全部违规码。历史 measure-contract-matrix 继续只表示旧规模探针。Schema 检查现在有 3 + 29 + 41 + 2 四组，此前正式快照不变。
 
 调用、来源观测集合、恢复预算 / 提交责任及附件重放见 [采集判定规范](docs/contracts/fetch-decisions-v1.md)、[ADR 0011](docs/decisions/0011-fetch-decisions.md) 和 [dev_memory](dev_memory/2026-11-04-m0-05a-fetch-decisions.md)。本轮输出调度意图，检查点 / 计时器 / 作业状态的真实事务与文件闭环尚待后续。
+
+## 采集载荷与配置锁
+
+```bash
+make test-collection-config # Manifest / 有效配置 / 任务 / 证据 / CloudEvents / 签名前载荷
+make schema-check          # 3 + 29 + 41 + 2 + 16 五组快照，88 个正式根模型
+```
+
+`resolve_collection_configuration` 展开有版本的部署 / 池缺省，冻结来源资格、事件注册、实际 Schema 和判定策略；`prepare_collection_task` 绑定输入、查询、flags、发布策略与稳定任务身份。证据逻辑清单和可变治理分离；事件语义意图与平台外发记录分离，通过 SDK 显式编解码 CloudEvents JSON。
+
+`prepare_bound_collection_material` 重建配置 / 任务、解析可信证据清单并独立取根，校验事件、coverage、检查点和 PageResult 后复用完整判定 / 签名材料。违规普通意图被忽略但仍进入包摘要；撤回内容要求存储剔除器，未实现的后继载荷 / 受控导入 / 依赖解析明确拒绝。没有真实 PG 写入、文件 IO 或外发服务。
+
+具体 profile、信任前提和接手顺序见 [采集配置规范](docs/contracts/collection-config-v1.md)、[ADR 0012](docs/decisions/0012-collection-config.md) 和 [dev_memory](dev_memory/2026-11-04-m0-05b-collection-config.md)。Claim / 标准文档具体载荷随 normalizer / Agent 落地；下一项开发真实证据 / 任务存储和 I5 / I7 / I21 同事务适配器。
 
 ## worker 隔离验证
 

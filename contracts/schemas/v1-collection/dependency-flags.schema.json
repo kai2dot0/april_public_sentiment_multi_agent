@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "依赖事实沿链取并集；没有统一可信等级或人工复核自动洗白。",
+  "properties": {
+    "contains_ambiguous_reference": {
+      "default": false,
+      "default_semantics": "absent means no known ambiguous reference",
+      "digest": "include",
+      "routable": false,
+      "title": "Contains Ambiguous Reference",
+      "type": "boolean"
+    },
+    "contains_inferred_relation": {
+      "default": false,
+      "default_semantics": "absent means no known inferred relation",
+      "digest": "include",
+      "routable": false,
+      "title": "Contains Inferred Relation",
+      "type": "boolean"
+    },
+    "contains_simulated_input": {
+      "default": false,
+      "default_semantics": "absent means no known simulated input",
+      "digest": "include",
+      "routable": false,
+      "title": "Contains Simulated Input",
+      "type": "boolean"
+    },
+    "source_withdrawn": {
+      "default": false,
+      "default_semantics": "absent means no known source withdrawal; current read checks still apply",
+      "digest": "include",
+      "routable": false,
+      "title": "Source Withdrawn",
+      "type": "boolean"
+    },
+    "unverified_model_input": {
+      "default": false,
+      "default_semantics": "absent means this dependency flag is not established",
+      "digest": "include",
+      "routable": false,
+      "title": "Unverified Model Input",
+      "type": "boolean"
+    }
+  },
+  "title": "DependencyFlags",
+  "type": "object"
+}

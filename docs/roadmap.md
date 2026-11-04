@@ -35,7 +35,8 @@
 | 分项 | 交付 | 状态 |
 | --- | --- | --- |
 | M0-05A | 正式 18 行 / 19 条 YAML、全部违规判定、可信控制 / PageResult 重算、签名前入口、全组合附件 | 工程交付见 [PR #11](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/11) 与 [dev_memory](../dev_memory/2026-11-04-m0-05a-fetch-decisions.md)；后续事务与服务接线未完成 |
-| 后续功能单元 | 闭环所需载荷与配置锁 → 真实存储 / I5 / I7 / I21 → 最小运行时 / SDK / file / I8 Fake 集成 | 待开发；每项独立 PR，不能以 Fake 替代事务内适配器 |
+| M0-05B | Manifest / 显式缺省、有效配置 / 输入 / 任务锁、证据身份、事件编解码与签名前载荷绑定 | 本地实现与检查通过；[dev_memory](../dev_memory/2026-11-04-m0-05b-collection-config.md) 记录范围及交付，PR / 远端 CI 待补；Claim / 标准文档随后续消费者落地 |
+| 后续功能单元 | 真实证据 / 任务 / 作业 / 控制存储与 I5 / I7 / I21 → 最小运行时 / SDK / file / I8 Fake 集成 | 待开发；每项独立 PR，不能以 Fake 替代事务内适配器 |
 
 ## 当前已知约束
 

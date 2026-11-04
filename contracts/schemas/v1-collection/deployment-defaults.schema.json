@@ -1,0 +1,276 @@
+{
+  "$defs": {
+    "Backoff": {
+      "additionalProperties": false,
+      "description": "确定性退避参数，实际时间 / 失败预算由运行时持久化。",
+      "properties": {
+        "initial_ms": {
+          "$ref": "#/$defs/SafeCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "maximum_ms": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "multiplier": {
+          "default_semantics": "required",
+          "digest": "include",
+          "minimum": 1,
+          "routable": false,
+          "title": "Multiplier",
+          "type": "number"
+        }
+      },
+      "required": [
+        "initial_ms",
+        "maximum_ms",
+        "multiplier"
+      ],
+      "title": "Backoff",
+      "type": "object"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Pool": {
+      "enum": [
+        "io",
+        "cpu",
+        "llm"
+      ],
+      "type": "string"
+    },
+    "PoolDefaults": {
+      "additionalProperties": false,
+      "description": "所有平台 / 池值显式给出；缺省值与资源上限分开。",
+      "properties": {
+        "backoff": {
+          "$ref": "#/$defs/Backoff",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "heartbeat_interval": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "lease_ttl": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_attempts": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "max_batch": {
+          "default_semantics": "required",
+          "digest": "include",
+          "maximum": 1,
+          "minimum": 1,
+          "routable": false,
+          "title": "Max Batch",
+          "type": "integer"
+        },
+        "maximum_lease_ttl": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "priority": {
+          "default_semantics": "required",
+          "digest": "include",
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "routable": false,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "publication_policy": {
+          "$ref": "#/$defs/PublicationPolicy",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "quota_class": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "resource_ceiling": {
+          "$ref": "#/$defs/Resources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "resources": {
+          "$ref": "#/$defs/Resources",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "retryable_classes": {
+          "default_semantics": "required",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Retryable Classes",
+          "type": "array"
+        },
+        "shed_policy": {
+          "default_semantics": "required",
+          "digest": "include",
+          "enum": [
+            "never",
+            "deferrable",
+            "sheddable"
+          ],
+          "routable": false,
+          "title": "Shed Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resources",
+        "resource_ceiling",
+        "lease_ttl",
+        "maximum_lease_ttl",
+        "heartbeat_interval",
+        "max_batch",
+        "retryable_classes",
+        "max_attempts",
+        "backoff",
+        "priority",
+        "shed_policy",
+        "quota_class",
+        "publication_policy"
+      ],
+      "title": "PoolDefaults",
+      "type": "object"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "PublicationPolicy": {
+      "enum": [
+        "automatic",
+        "manual_only"
+      ],
+      "type": "string"
+    },
+    "Resources": {
+      "additionalProperties": false,
+      "description": "单位固定为 cpu=millicores、memory=bytes、wall_timeout=milliseconds。",
+      "properties": {
+        "cpu": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "memory": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "wall_timeout": {
+          "$ref": "#/$defs/PositiveCount",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "cpu",
+        "memory",
+        "wall_timeout"
+      ],
+      "title": "Resources",
+      "type": "object"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "SemVer": {
+      "maxLength": 128,
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "版本变化即改变配置引用；worker_checkpoint 在 Demo 固定关闭。",
+  "properties": {
+    "capabilities": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "default_pool": {
+      "$ref": "#/$defs/Pool",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "pools": {
+      "additionalProperties": {
+        "$ref": "#/$defs/PoolDefaults"
+      },
+      "default_semantics": "required",
+      "digest": "include",
+      "propertyNames": {
+        "$ref": "#/$defs/Pool"
+      },
+      "routable": false,
+      "title": "Pools",
+      "type": "object"
+    },
+    "version": {
+      "$ref": "#/$defs/SemVer",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "worker_checkpoint": {
+      "const": false,
+      "default": false,
+      "default_semantics": "absent expands to Demo worker_checkpoint=false",
+      "digest": "include",
+      "routable": false,
+      "title": "Worker Checkpoint",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "version",
+    "default_pool",
+    "pools",
+    "capabilities"
+  ],
+  "title": "DeploymentDefaults",
+  "type": "object"
+}

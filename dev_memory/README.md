@@ -15,3 +15,4 @@
 | [2026-10-31-m0-03-first-contracts.md](2026-10-31-m0-03-first-contracts.md) | 第一批正式契约、模式权限、开放 FetchPage、I4 类型与信任边界、状态错误、ID 输入材料和第二批接手 |
 | [2026-11-03-m0-04-second-contracts.md](2026-11-03-m0-04-second-contracts.md) | 第二批结果包 / 提交 / 控制 / 状态契约、共享语义投影 / HMAC、13 步上下文与真实 PG 借用事务边界、后续闭环接手 |
 | [2026-11-04-m0-05a-fetch-decisions.md](2026-11-04-m0-05a-fetch-decisions.md) | 正式 18 行 / 19 条规则、全部违规与可信观测集合、签名前重算、全组合独立 oracle 与 CI 逐违规附件 |
+| [2026-11-04-m0-05b-collection-config.md](2026-11-04-m0-05b-collection-config.md) | Manifest / 显式缺省、来源与 Schema 配置冻结、任务身份 / 输入锁、证据身份 / 治理、事件线格式与签名前具体载荷绑定 |
