@@ -111,6 +111,6 @@ rtk git diff --check
 
 ## 7. PR 与交付
 
-PR 创建后在同一记录补实际链接 / 实现提交；最终受检 head、CI run、artifact 与 merge 证据以 PR 实际交付记录为准，合并前须确认 checks / infrastructure / isolation 全成功。PR #10 的实际最终 head / CI / merge 已补到原 memory。
+本模块 [PR #11](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/11)，实现提交 `a89bf7a7a4874767ba86dfa8554851dee48c6ba3`。关联补记经同一功能分支提交；最终受检 head、CI run、artifact 与 merge 证据以 PR 实际交付记录为准，合并前须确认 checks / infrastructure / isolation 全成功及附件实际上传。PR #10 的实际最终 head / CI / merge 已补到原 memory，没有直接向 main 提交 / 推送。
 
-GitHub 连接器已重新发现支持 PR 创建 / 合并等能力，优先使用；本地 git 推送按已有 kai2dot0 授权操作，不切换全局 gh 默认账号，不打印或落盘凭据。若连接器权限不足则按实际错误说明并使用已授权 gh 后备。禁止直接提交 / 推送 main。
+本轮重新发现 GitHub 连接器已暴露 PR 创建 / 合并能力并优先尝试，创建实际返回 integration 403（Resource not accessible by integration）；随后用已有 kai2dot0 凭据的 gh 后备成功创建 PR #11。本地推送亦沿该已有授权，不切换全局 gh 默认账号、不打印或落盘凭据、不重新申请权限。403 是连接器权限不足，不是自动审批拒绝。
