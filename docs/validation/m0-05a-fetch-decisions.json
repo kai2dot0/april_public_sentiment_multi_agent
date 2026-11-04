@@ -1,0 +1,159 @@
+{
+  "measured_at_utc": "2026-11-04T06:33:03+00:00",
+  "scope": "bounded_slice_fetch_decision_rules; not_full_M0_acceptance",
+  "exhaustive": true,
+  "policy_lock": {
+    "evaluator_version": "fetch-decisions/1",
+    "actions_version": "fetch-actions/1.0.0",
+    "actions_digest": "sha256:d6ebe87871849b33e7b1f2eb54260719e941bd99a647c43217b6aa2429e8c805",
+    "violations_version": "fetch-violations/1.0.0",
+    "violations_digest": "sha256:d4eb8bab2f872202f41ee313fa631d09952116ebfde2f08847451c63f1e9d475"
+  },
+  "dimensions": {
+    "schedule": [
+      "periodic",
+      "continuous"
+    ],
+    "status": [
+      "ok",
+      "rate_limited",
+      "transport_error",
+      "protocol_error",
+      "gone",
+      "forbidden",
+      "blocked",
+      "auth_required",
+      "cursor_expired",
+      "cursor_gap",
+      "invalid_job",
+      "__unknown_enum__"
+    ],
+    "status_reason": [
+      null,
+      "insufficient_scope",
+      "ban",
+      "__unknown_enum__",
+      "free diagnostic text"
+    ],
+    "failure_scope": [
+      null,
+      "item",
+      "job",
+      "__unknown_enum__"
+    ],
+    "completeness": [
+      "complete",
+      "partial",
+      "unknown",
+      "__unknown_enum__"
+    ],
+    "end_reason": [
+      null,
+      "source_exhausted",
+      "task_budget_exhausted",
+      "cycle_budget_exhausted",
+      "slice_end",
+      "__unknown_enum__"
+    ],
+    "has_continuation": [
+      false,
+      true
+    ],
+    "has_valid_prefix": [
+      false,
+      true
+    ],
+    "single_resource": [
+      false,
+      true
+    ],
+    "item_outcomes": [
+      "empty",
+      "in_present",
+      "in_failed",
+      "in_missing",
+      "outside_present",
+      "outside_missing",
+      "in_unknown",
+      "in_unknown_and_missing",
+      "outside_unknown",
+      "outside_unknown_and_missing"
+    ],
+    "request_mode": [
+      "item_addressed",
+      "query_or_stream"
+    ],
+    "controls_valid": [
+      false,
+      true
+    ]
+  },
+  "exclusions": [
+    "single_resource AND request_mode=query_or_stream; no verdict assigned"
+  ],
+  "environment": {
+    "python": "3.12.12",
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "measurement": {
+    "raw_total": 3686400,
+    "selected": 3686400,
+    "excluded_single_query": 921600,
+    "evaluated": 2764800,
+    "valid": 4685,
+    "violation": 2760115,
+    "ordinal_checksum": 5096058624000,
+    "action_rows": {
+      "1": 360,
+      "2": 360,
+      "3": 360,
+      "4": 360,
+      "5": 360,
+      "6": 360,
+      "7": 180,
+      "8": 180,
+      "9": 45,
+      "10": 180,
+      "11": 45,
+      "12": 180,
+      "13": 225,
+      "14": 270,
+      "15": 495,
+      "16": 450,
+      "17": 50,
+      "18": 225
+    },
+    "violation_codes": {
+      "V1": 2077920,
+      "V2": 138240,
+      "V3": 57600,
+      "V4": 1900800,
+      "V5": 2112000,
+      "V6": 633600,
+      "V7": 633600,
+      "V8": 1770240,
+      "V9": 28800,
+      "V10": 9600,
+      "V11": 4800,
+      "V12": 4800,
+      "V13": 28800,
+      "V14": 19200,
+      "V15": 691200,
+      "V16": 19200,
+      "V17": 28800,
+      "V18": 30720,
+      "V19": 1382400
+    },
+    "shard_index": 0,
+    "shard_count": 1,
+    "profile_digest": "106e1c9b1af79a1d162b52ba14efbeeb7dba76f3478a24b7e89d3ddbaf8ca6a6",
+    "elapsed_seconds": 30.945021874969825
+  },
+  "violations_artifact": {
+    "file": "violations-0-of-1.jsonl.gz",
+    "sha256": "33c6336fd17580a5579f2f6defec85bf7cee4a873e2492887633e6721bfa16e0",
+    "bytes": 8176456,
+    "record_shape": "[raw_product_ordinal, all_ordered_violation_codes]; first code is primary; final action is violation"
+  }
+}
