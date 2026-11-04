@@ -71,6 +71,6 @@ violation 页普通写入由后续受限提交忽略，但原请求仍进入完�
 
 ## 6. PR 交付记录
 
-PR 尚待创建；此处将在同一功能分支补入实际链接。最终受检 head、三个实际 CI job、完整判定附件及 merge SHA 记录到 PR 描述，避免为自引用 SHA 反复改动受检内容；下一模块可在本文件补记最终合并事实。已有授权允许 PR merge，不直接提交 main。
+本模块 [PR #12](https://github.com/kai2dot0/april_public_sentiment_multi_agent/pull/12)，实现提交 `aab6186`；关联补记经同一功能分支交付。最终受检 head、三个实际 CI job、完整判定附件及 merge SHA 记录到 PR 描述，避免为自引用 SHA 反复改动受检内容；下一模块可在本文件补记最终合并事实。已有授权允许 PR merge，不直接提交 main。
 
 上一项 PR #11 实际最终 head / CI / artifact / merge 证据已补到原 A memory。GitHub 连接器此前创建实际返回 integration 403，因此写入使用已有授权 kai2dot0 的 gh 后备，保留全局默认账号，不输出 / 落盘令牌；这不是自动审批拒绝，也无需重新申请 workflow 权限。

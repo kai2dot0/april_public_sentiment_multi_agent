@@ -56,7 +56,7 @@ make test-jcs       # 离线重放 RFC 向量与输入边界；也包含在 make
 
 锁定 `rfc8785 0.1.4`，内部原型输出 JCS UTF-8 字节与完整输入值的 SHA-256。对象键递归按 UTF-16 排序，数组顺序和 Unicode 形式保留；严格文本入口拒绝重复键、非法 Unicode、非有限数值与非 UTF-8 编码。
 
-Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。语义包投影与签名现已在第二批实现；证据身份解析和实际回执持久化尚未实现。早期选型与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
+Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。语义包投影与签名已在第二批实现；证据清单身份与字节校验见 M0-05B，实际证据解析服务和回执持久化尚未实现。早期选型与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
 
 ## CEL 规则验证
 
@@ -105,7 +105,7 @@ make schema-check          # 3 + 29 + 41 份 schema，第一批快照保持不�
 
 同事务上下文明确 I5 / I7 / I9 / I10 / I21 的步骤、根和来源锁；PG facade 只借已有事务，不提供提交 / 回滚或连接工厂。真实 PG 测试证明同事务 identity、提交前不可见、回滚无残留和过期借用失效；业务适配器、13 步实际写入、I8 注册与 I17 / I19 服务尚未实现。
 
-字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。M0-05 分项推进首个文件一页 → 提交 → 检查点 → 事件的真实闭环，当前先完成下面的判定组件。
+字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。M0-05 分项推进首个文件一页 → 提交 → 检查点 → 事件的真实闭环，已完成下面的判定组件与采集载荷 / 配置锁。
 
 ## 正式采集判定器
 
