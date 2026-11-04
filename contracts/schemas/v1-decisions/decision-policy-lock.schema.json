@@ -1,0 +1,59 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "配置解析器需钉定两个版本、文件字节摘要及解释器版本，而不只看文件名。",
+  "properties": {
+    "actions_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "actions_version": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "evaluator_version": {
+      "const": "fetch-decisions/1",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Evaluator Version",
+      "type": "string"
+    },
+    "violations_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "violations_version": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "evaluator_version",
+    "actions_version",
+    "actions_digest",
+    "violations_version",
+    "violations_digest"
+  ],
+  "title": "DecisionPolicyLock",
+  "type": "object"
+}

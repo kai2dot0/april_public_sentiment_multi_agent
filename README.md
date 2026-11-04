@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。已交付工程骨架、M0-02 七项技术验证及第一批契约，本轮完成 **M0-04 第二批契约工程基线**：结果包、提交 / 控制 / 状态协议、共享语义摘要、运行时签名和同事务上下文。任务编排、实际采集、证据业务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架、M0-02 七项技术验证及两批契约已交付，本轮进入 **M0-05A 正式采集判定器**：18 行动作、19 条违规、完整组合验证与签名前重算。任务编排、实际采集、证据业务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -105,7 +105,21 @@ make schema-check          # 3 + 29 + 41 份 schema，第一批快照保持不�
 
 同事务上下文明确 I5 / I7 / I9 / I10 / I21 的步骤、根和来源锁；PG facade 只借已有事务，不提供提交 / 回滚或连接工厂。真实 PG 测试证明同事务 identity、提交前不可见、回滚无残留和过期借用失效；业务适配器、13 步实际写入、I8 注册与 I17 / I19 服务尚未实现。
 
-字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。下一项 M0-05 是首个文件一页 → 提交 → 检查点 → 事件的真实闭环。
+字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。M0-05 分项推进首个文件一页 → 提交 → 检查点 → 事件的真实闭环，当前先完成下面的判定组件。
+
+## 正式采集判定器
+
+```bash
+make test-fetch-decisions        # 真实页面、全部动作 / 违规与策略反例
+make test-fetch-decision-matrix  # 正式全组合 + gzip 违规明细，默认全量
+uv run --locked python -m scripts.verify_fetch_decisions --ordinal 12345 # 重放附件序号
+```
+
+规则位于 `contracts/decisions/`，完整 V1–V19 先于 18 行匹配；合法输入必须恰好一行，违规保留全部代码且不执行动作表。平台重新校验控制，未知页面枚举仍保留合法信号；`prepare_collection_material` 在签名前独立重算 PageResult，拒绝伪造动作 / 版本和遗漏违规。
+
+正式矩阵判定 2,764,800 个可达组合，对照独立 oracle；所有动作和违规均覆盖。CI 每 PR 完整运行并保存 `fetch-decision-evidence` 附件 14 天，逐条包含全部违规码。历史 measure-contract-matrix 继续只表示旧规模探针。Schema 检查现在有 3 + 29 + 41 + 2 四组，此前正式快照不变。
+
+调用、来源观测集合、恢复预算 / 提交责任及附件重放见 [采集判定规范](docs/contracts/fetch-decisions-v1.md)、[ADR 0011](docs/decisions/0011-fetch-decisions.md) 和 [dev_memory](dev_memory/2026-11-04-m0-05a-fetch-decisions.md)。本轮输出调度意图，检查点 / 计时器 / 作业状态的真实事务与文件闭环尚待后续。
 
 ## worker 隔离验证
 

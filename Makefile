@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-jcs test-cel test-contract-toolchain test-first-contracts test-second-contracts test-source-protocol probe-source-metadata schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-jcs test-cel test-contract-toolchain test-first-contracts test-second-contracts test-fetch-decisions test-fetch-decision-matrix test-source-protocol probe-source-metadata schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -44,6 +44,14 @@ test-first-contracts:
 # 第二批提交 / 控制 / 摘要签名契约与事务上下文反例。
 test-second-contracts:
 	uv run --locked pytest tests/unit/test_second_contracts.py tests/unit/test_semantic_signatures.py tests/unit/test_submission_context.py
+
+# 正式判定器的真实页面 / 策略损坏反例；包含于默认 check。
+test-fetch-decisions:
+	uv run --locked pytest tests/unit/test_fetch_decisions.py
+
+# 每次完整验证并输出逐违规组合的全部命中码，不与历史规模探针混淆。
+test-fetch-decision-matrix:
+	uv run --locked python -m scripts.verify_fetch_decisions
 
 # 合成来源控制帧、真实 loopback WS 断线 / 恢复；默认 check 包含这些测试。
 test-source-protocol:

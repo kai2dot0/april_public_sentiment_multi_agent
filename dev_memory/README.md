@@ -14,3 +14,4 @@
 | [2026-10-30-m0-02g-source-protocol.md](2026-10-30-m0-02g-source-protocol.md) | Jetstream 两代协议、实例游标、真实 WS 恢复、AppView 缓存与许可证据、未知保证及后续接线 |
 | [2026-10-31-m0-03-first-contracts.md](2026-10-31-m0-03-first-contracts.md) | 第一批正式契约、模式权限、开放 FetchPage、I4 类型与信任边界、状态错误、ID 输入材料和第二批接手 |
 | [2026-11-03-m0-04-second-contracts.md](2026-11-03-m0-04-second-contracts.md) | 第二批结果包 / 提交 / 控制 / 状态契约、共享语义投影 / HMAC、13 步上下文与真实 PG 借用事务边界、后续闭环接手 |
+| [2026-11-04-m0-05a-fetch-decisions.md](2026-11-04-m0-05a-fetch-decisions.md) | 正式 18 行 / 19 条规则、全部违规与可信观测集合、签名前重算、全组合独立 oracle 与 CI 逐违规附件 |

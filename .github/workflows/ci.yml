@@ -41,6 +41,17 @@ jobs:
           version: "0.9.21"
       - run: make setup
       - run: make check
+      - run: make test-fetch-decision-matrix
+        id: fetch_matrix
+      - name: Preserve complete fetch decision evidence
+        if: always() && steps.fetch_matrix.outcome != 'skipped'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetch-decision-evidence
+          path: .cache/fetch-decisions/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
       - run: make measure-contract-matrix
       - run: make compose-check
 

@@ -1,0 +1,291 @@
+{
+  "$defs": {
+    "CheckpointPolicy": {
+      "enum": [
+        "advance",
+        "persisted_prefix",
+        "none"
+      ],
+      "type": "string"
+    },
+    "Completeness": {
+      "enum": [
+        "complete",
+        "partial",
+        "unknown"
+      ],
+      "type": "string"
+    },
+    "DecisionPolicyLock": {
+      "additionalProperties": false,
+      "description": "配置解析器需钉定两个版本、文件字节摘要及解释器版本，而不只看文件名。",
+      "properties": {
+        "actions_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "actions_version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "evaluator_version": {
+          "const": "fetch-decisions/1",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false,
+          "title": "Evaluator Version",
+          "type": "string"
+        },
+        "violations_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "violations_version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "evaluator_version",
+        "actions_version",
+        "actions_digest",
+        "violations_version",
+        "violations_digest"
+      ],
+      "title": "DecisionPolicyLock",
+      "type": "object"
+    },
+    "FollowUp": {
+      "enum": [
+        "continuation",
+        "cycle_timer",
+        "next_slice",
+        "connection_timer",
+        "cooldown_recovery",
+        "checkpoint_recovery",
+        "explicit_resume",
+        "manual",
+        "resync",
+        "revisit_cycle",
+        "none"
+      ],
+      "type": "string"
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "JobStatus": {
+      "enum": [
+        "idle",
+        "running",
+        "cooling",
+        "paused"
+      ],
+      "type": "string"
+    },
+    "NextAction": {
+      "enum": [
+        "continue",
+        "idle",
+        "wait",
+        "halt",
+        "reauth",
+        "resync",
+        "missing_observation",
+        "violation"
+      ],
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "ViolationCode": {
+      "enum": [
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "valid 恰有一行动作，violation 为受限投影，不执行动作行。",
+  "properties": {
+    "action_row": {
+      "anyOf": [
+        {
+          "maximum": 18,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Action Row"
+    },
+    "checkpoint_policy": {
+      "$ref": "#/$defs/CheckpointPolicy",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "connector_unhealthy": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Connector Unhealthy",
+      "type": "boolean"
+    },
+    "coverage_completeness": {
+      "$ref": "#/$defs/Completeness",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "coverage_truncated": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Coverage Truncated",
+      "type": "boolean"
+    },
+    "follow_up": {
+      "$ref": "#/$defs/FollowUp",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "job_target": {
+      "$ref": "#/$defs/JobStatus",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "next_action": {
+      "$ref": "#/$defs/NextAction",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "normal_outputs_allowed": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Normal Outputs Allowed",
+      "type": "boolean"
+    },
+    "policy_lock": {
+      "$ref": "#/$defs/DecisionPolicyLock",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "primary_violation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ViolationCode"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "quality_issue": {
+      "anyOf": [
+        {
+          "const": "periodic_slice_end",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Quality Issue"
+    },
+    "recovery_budget_required": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Recovery Budget Required",
+      "type": "boolean"
+    },
+    "verdict": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "valid",
+        "violation"
+      ],
+      "routable": false,
+      "title": "Verdict",
+      "type": "string"
+    },
+    "violation_codes": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/ViolationCode"
+      },
+      "routable": false,
+      "title": "Violation Codes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "policy_lock",
+    "verdict",
+    "violation_codes",
+    "primary_violation",
+    "action_row",
+    "next_action",
+    "job_target",
+    "checkpoint_policy",
+    "follow_up",
+    "coverage_completeness",
+    "coverage_truncated",
+    "connector_unhealthy",
+    "recovery_budget_required",
+    "quality_issue",
+    "normal_outputs_allowed"
+  ],
+  "title": "FetchDecision",
+  "type": "object"
+}
