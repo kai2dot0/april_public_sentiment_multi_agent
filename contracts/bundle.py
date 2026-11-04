@@ -12,6 +12,9 @@ from contracts.fetch import Coverage, FetchPageWire
 from contracts.primitives import Checkpoint, ContractModel, Identifier, SafeCount, Sha256, StableReference, contract_field
 from contracts.state_service import StateWrite
 from contracts.quality import ValidationRecord
+from contracts.identities import IdDerivationInput, derive_output_id
+from contracts.canonical_json import canonical_sha256
+from contracts.primitives import validated_snapshot
 
 
 type ViolationCode = Literal["V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19"]
@@ -176,3 +179,17 @@ def proposed_terminal_status(bundle: ResultBundle) -> Literal["completed", "comp
         return "completed_violation" if bundle.page_result.verdict == "violation" else "completed"
     content = any(getattr(bundle, name) for name in ("claims", "validation_records", "state_writes", "outbound_events", "derived_writes", "staged_promotions", "evidence_creations", "documents"))
     return "skipped_withdrawn" if bundle.pruning_records and not content else "completed"
+
+
+def page_result_reference(task_id: str, segment_no: int, result: PageResult) -> StableReference:
+    """页面内容排除自引用字段，所有事实 / 违规仍参与不可变身份。"""
+    result = validated_snapshot(PageResult, result)
+    object_id = derive_output_id(IdDerivationInput(task_id=task_id, segment_no=segment_no, output_kind="page_result", local_output_index=0))
+    return StableReference(object_id=object_id, version="1", content_digest="sha256:" + canonical_sha256(result.model_dump(mode="json", exclude={"reference"})))
+
+
+def coverage_reference(task_id: str, segment_no: int, declaration: CoverageDeclaration) -> StableReference:
+    """覆盖事实与完整根一起寻址，参考字段本身不造成摘要自循环。"""
+    declaration = validated_snapshot(CoverageDeclaration, declaration)
+    object_id = derive_output_id(IdDerivationInput(task_id=task_id, segment_no=segment_no, output_kind="coverage", local_output_index=0))
+    return StableReference(object_id=object_id, version="1", content_digest="sha256:" + canonical_sha256(declaration.model_dump(mode="json", exclude={"reference"})))

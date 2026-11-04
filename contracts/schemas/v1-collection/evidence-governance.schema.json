@@ -1,0 +1,104 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "以证据引用为键单独版本化；当前访问检查与审计由后续服务执行。",
+  "properties": {
+    "access_scopes": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "routable": false,
+      "title": "Access Scopes",
+      "type": "array"
+    },
+    "audit_basis": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "data_class": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "evidence_ref": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "governance_version": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "retention_class": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "evidence_ref",
+    "governance_version",
+    "data_class",
+    "retention_class",
+    "access_scopes",
+    "audit_basis"
+  ],
+  "title": "EvidenceGovernance",
+  "type": "object"
+}

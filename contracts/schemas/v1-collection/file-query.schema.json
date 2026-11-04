@@ -1,0 +1,57 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "文件身份由可信 fixture / 导入目录解析，任务不携任意宿主路径或 URL。",
+  "properties": {
+    "byte_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "file_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "format": {
+      "const": "jsonl/1",
+      "default": "jsonl/1",
+      "default_semantics": "absent means versioned JSON-lines input",
+      "digest": "include",
+      "routable": false,
+      "title": "Format",
+      "type": "string"
+    },
+    "page_size": {
+      "$ref": "#/$defs/PositiveCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "file_id",
+    "byte_digest",
+    "page_size"
+  ],
+  "title": "FileQuery",
+  "type": "object"
+}

@@ -1,6 +1,6 @@
 # 市场监管舆情 Multi-Agent 平台
 
-依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架、M0-02 七项技术验证及两批契约已交付，本轮进入 **M0-05A 正式采集判定器**：18 行动作、19 条违规、完整组合验证与签名前重算。任务编排、实际采集、证据业务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
+依据 `hld/` 中设计大纲 v1.0 和 HLD v1.2 开发。工程骨架、M0-02 七项技术验证、两批契约与正式采集判定器已交付，本轮完成 **M0-05B 采集载荷与配置锁**：Manifest / 显式缺省、任务与输入冻结、证据身份、事件编解码及签名前具体绑定。任务编排、实际采集、证据业务服务、模型分析与报告尚未实现，M0 的完整硬验收尚未完成。
 
 ## 开发启动
 
@@ -56,7 +56,7 @@ make test-jcs       # 离线重放 RFC 向量与输入边界；也包含在 make
 
 锁定 `rfc8785 0.1.4`，内部原型输出 JCS UTF-8 字节与完整输入值的 SHA-256。对象键递归按 UTF-16 排序，数组顺序和 Unicode 形式保留；严格文本入口拒绝重复键、非法 Unicode、非有限数值与非 UTF-8 编码。
 
-Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。语义包投影与签名现已在第二批实现；证据身份解析和实际回执持久化尚未实现。早期选型与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
+Python 对象入口拒绝非安全整数；文本入口按 RFC binary64 数值语义解析，可能舍入大数。精确的 64 位 ID 必须用字符串并先经过契约校验。语义包投影与签名已在第二批实现；证据清单身份与字节校验见 M0-05B，实际证据解析服务和回执持久化尚未实现。早期选型与数值域边界见 [ADR 0004](docs/decisions/0004-jcs-canonicalization.md) 和 [开发记录](dev_memory/2026-10-30-m0-02c-jcs-canonicalization.md)。
 
 ## CEL 规则验证
 
@@ -105,7 +105,7 @@ make schema-check          # 3 + 29 + 41 份 schema，第一批快照保持不�
 
 同事务上下文明确 I5 / I7 / I9 / I10 / I21 的步骤、根和来源锁；PG facade 只借已有事务，不提供提交 / 回滚或连接工厂。真实 PG 测试证明同事务 identity、提交前不可见、回滚无残留和过期借用失效；业务适配器、13 步实际写入、I8 注册与 I17 / I19 服务尚未实现。
 
-字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。M0-05 分项推进首个文件一页 → 提交 → 检查点 → 事件的真实闭环，当前先完成下面的判定组件。
+字段、回执优先级、控制对象行与开放项见 [第二批契约 v1](docs/contracts/second-batch-v1.md)、[ADR 0010](docs/decisions/0010-second-contracts.md) 和 [dev_memory](dev_memory/2026-11-03-m0-04-second-contracts.md)。M0-05 分项推进首个文件一页 → 提交 → 检查点 → 事件的真实闭环，已完成下面的判定组件与采集载荷 / 配置锁。
 
 ## 正式采集判定器
 
@@ -120,6 +120,19 @@ uv run --locked python -m scripts.verify_fetch_decisions --ordinal 12345 # 重�
 正式矩阵判定 2,764,800 个可达组合，对照独立 oracle；所有动作和违规均覆盖。CI 每 PR 完整运行并保存 `fetch-decision-evidence` 附件 14 天，逐条包含全部违规码。历史 measure-contract-matrix 继续只表示旧规模探针。Schema 检查现在有 3 + 29 + 41 + 2 四组，此前正式快照不变。
 
 调用、来源观测集合、恢复预算 / 提交责任及附件重放见 [采集判定规范](docs/contracts/fetch-decisions-v1.md)、[ADR 0011](docs/decisions/0011-fetch-decisions.md) 和 [dev_memory](dev_memory/2026-11-04-m0-05a-fetch-decisions.md)。本轮输出调度意图，检查点 / 计时器 / 作业状态的真实事务与文件闭环尚待后续。
+
+## 采集载荷与配置锁
+
+```bash
+make test-collection-config # Manifest / 有效配置 / 任务 / 证据 / CloudEvents / 签名前载荷
+make schema-check          # 3 + 29 + 41 + 2 + 16 五组快照，88 个正式根模型
+```
+
+`resolve_collection_configuration` 展开有版本的部署 / 池缺省，冻结来源资格、事件注册、实际 Schema 和判定策略；`prepare_collection_task` 绑定输入、查询、flags、发布策略与稳定任务身份。证据逻辑清单和可变治理分离；事件语义意图与平台外发记录分离，通过 SDK 显式编解码 CloudEvents JSON。
+
+`prepare_bound_collection_material` 重建配置 / 任务、解析可信证据清单并独立取根，校验事件、coverage、检查点和 PageResult 后复用完整判定 / 签名材料。违规普通意图被忽略但仍进入包摘要；撤回内容要求存储剔除器，未实现的后继载荷 / 受控导入 / 依赖解析明确拒绝。没有真实 PG 写入、文件 IO 或外发服务。
+
+具体 profile、信任前提和接手顺序见 [采集配置规范](docs/contracts/collection-config-v1.md)、[ADR 0012](docs/decisions/0012-collection-config.md) 和 [dev_memory](dev_memory/2026-11-04-m0-05b-collection-config.md)。Claim / 标准文档具体载荷随 normalizer / Agent 落地；下一项开发真实证据 / 任务存储和 I5 / I7 / I21 同事务适配器。
 
 ## worker 隔离验证
 

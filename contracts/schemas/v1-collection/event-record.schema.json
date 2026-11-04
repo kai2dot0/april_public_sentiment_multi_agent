@@ -1,0 +1,369 @@
+{
+  "$defs": {
+    "AbsoluteUri": {
+      "maxLength": 8192,
+      "type": "string"
+    },
+    "EventType": {
+      "maxLength": 512,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9_.-]*\\.v[1-9][0-9]*$",
+      "type": "string"
+    },
+    "ExecutionMode": {
+      "enum": [
+        "live",
+        "replay",
+        "shadow",
+        "eval",
+        "backfill"
+      ],
+      "type": "string"
+    },
+    "ExtensionScalar": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "maximum": 2147483647,
+          "minimum": -2147483648,
+          "type": "integer"
+        }
+      ]
+    },
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Implementation": {
+      "enum": [
+        "real",
+        "fake",
+        "null"
+      ],
+      "type": "string"
+    },
+    "JsonValue": {},
+    "PublicationPolicy": {
+      "enum": [
+        "automatic",
+        "manual_only"
+      ],
+      "type": "string"
+    },
+    "RouteName": {
+      "maxLength": 64,
+      "pattern": "^attr[a-z0-9]+$",
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "UriReference": {
+      "maxLength": 8192,
+      "type": "string"
+    },
+    "UtcTimestamp": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$",
+      "type": "string"
+    },
+    "WithdrawalSequence": {
+      "maxLength": 20,
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "平台持久化外发记录；SDK 将 routing / causedby 展平为顶层标量扩展。",
+  "properties": {
+    "actorid": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "actorobo": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no on-behalf-of actor",
+      "digest": "include",
+      "routable": false
+    },
+    "actortype": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "causedby": {
+      "default_semantics": "absent expands to empty bounded parent event list; full lineage is stored separately",
+      "digest": "include",
+      "items": {
+        "$ref": "#/$defs/Identifier"
+      },
+      "maxItems": 32,
+      "routable": false,
+      "title": "Causedby",
+      "type": "array"
+    },
+    "content_kind": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "metadata",
+        "source_content"
+      ],
+      "routable": false,
+      "title": "Content Kind",
+      "type": "string"
+    },
+    "data": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means referenced JSON payload; source content cannot be inline",
+      "digest": "include",
+      "routable": false,
+      "title": "Data"
+    },
+    "dataclass": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "default_semantics": "absent expands to the project JSON event profile",
+      "digest": "include",
+      "routable": false,
+      "title": "Datacontenttype",
+      "type": "string"
+    },
+    "datadigest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Sha256"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "required with dataref; digest of the resolved JCS JSON payload",
+      "digest": "include",
+      "routable": false
+    },
+    "dataref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AbsoluteUri"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent for inline metadata; never a blob instance",
+      "digest": "include",
+      "routable": false
+    },
+    "dataschema": {
+      "$ref": "#/$defs/AbsoluteUri",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "domainpack": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "emittedat": {
+      "$ref": "#/$defs/UtcTimestamp",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "expiresat": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UtcTimestamp"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent means no event expiration",
+      "digest": "include",
+      "routable": false
+    },
+    "hops": {
+      "default": 0,
+      "default_semantics": "absent expands to zero hops",
+      "digest": "include",
+      "maximum": 2147483647,
+      "minimum": 0,
+      "routable": false,
+      "title": "Hops",
+      "type": "integer"
+    },
+    "id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "impl": {
+      "$ref": "#/$defs/Implementation",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "mode": {
+      "$ref": "#/$defs/ExecutionMode",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "partitionkey": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "publicationpolicy": {
+      "$ref": "#/$defs/PublicationPolicy",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "routing": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ExtensionScalar"
+      },
+      "default_semantics": "absent expands to empty registered scalar routing aliases",
+      "digest": "include",
+      "propertyNames": {
+        "$ref": "#/$defs/RouteName"
+      },
+      "routable": false,
+      "title": "Routing",
+      "type": "object"
+    },
+    "runid": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "source": {
+      "$ref": "#/$defs/UriReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "default_semantics": "absent expands to CloudEvents specversion 1.0",
+      "digest": "include",
+      "routable": false,
+      "title": "Specversion",
+      "type": "string"
+    },
+    "subject": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "subjectseq": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/WithdrawalSequence"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent for arrival streams; causal sequence is platform-assigned uint64 text",
+      "digest": "include",
+      "routable": false
+    },
+    "tenantid": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    },
+    "time": {
+      "$ref": "#/$defs/UtcTimestamp",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "traceparent": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "type": {
+      "$ref": "#/$defs/EventType",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": true
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "type",
+    "subject",
+    "time",
+    "dataschema",
+    "runid",
+    "mode",
+    "partitionkey",
+    "tenantid",
+    "domainpack",
+    "actortype",
+    "actorid",
+    "impl",
+    "dataclass",
+    "publicationpolicy",
+    "content_kind",
+    "emittedat",
+    "traceparent"
+  ],
+  "title": "EventRecord",
+  "type": "object"
+}

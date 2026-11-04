@@ -1,0 +1,63 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "普通切片身份；continuous 的 cycle 只记账，不参与身份哈希。",
+  "properties": {
+    "cycle_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "job_generation": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "job_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "schedule": {
+      "default_semantics": "required",
+      "digest": "include",
+      "enum": [
+        "periodic",
+        "continuous"
+      ],
+      "routable": false,
+      "title": "Schedule",
+      "type": "string"
+    },
+    "slice_seq": {
+      "$ref": "#/$defs/SafeCount",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "job_id",
+    "job_generation",
+    "schedule",
+    "cycle_id",
+    "slice_seq"
+  ],
+  "title": "CollectionTaskKey",
+  "type": "object"
+}

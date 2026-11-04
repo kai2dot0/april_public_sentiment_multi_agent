@@ -29,7 +29,9 @@ def prepare_material(request: SubmissionRequest, binding: TaskBinding, *, verifi
     request = validated_snapshot(SubmissionRequest, request)
     binding = validated_snapshot(TaskBinding, binding)
     verified_roots = validated_snapshot(RootSources, verified_roots)
-    if request.task_id != binding.task_id or declared_roots(request.bundle) != verified_roots:
+    # 违规采集页不执行普通写入，签名仍覆盖原包，但根前提只属于实际受限投影。
+    projected_roots = RootSources() if request.bundle.page_result is not None and request.bundle.page_result.verdict == "violation" else declared_roots(request.bundle)
+    if request.task_id != binding.task_id or projected_roots != verified_roots:
         raise ValidationBindingError("Task or independently resolved roots disagree")
     ctx = binding.context
     for root in verified_roots.objects:

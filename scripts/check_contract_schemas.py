@@ -11,6 +11,7 @@ from contracts.tooling import WireModel, checked_schema
 from contracts.registry import CONTRACT_MODELS
 from contracts.second_registry import SECOND_BATCH_MODELS
 from contracts.fetch_decisions import DECISION_MODELS
+from contracts.collection_registry import COLLECTION_MODELS
 from tests.support.contract_probe import PROBE_MODELS
 
 
@@ -37,7 +38,7 @@ def main() -> None:
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1] / "contracts/schemas"
-    for group, models in (("probes", PROBE_MODELS), ("v1", CONTRACT_MODELS), ("v1-second", SECOND_BATCH_MODELS), ("v1-decisions", DECISION_MODELS)):
+    for group, models in (("probes", PROBE_MODELS), ("v1", CONTRACT_MODELS), ("v1-second", SECOND_BATCH_MODELS), ("v1-decisions", DECISION_MODELS), ("v1-collection", COLLECTION_MODELS)):
         directory = root / group
         if args.write:
             directory.mkdir(parents=True, exist_ok=True)

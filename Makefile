@@ -4,7 +4,7 @@ export UV_CACHE_DIR := $(CURDIR)/.cache/uv
 export UV_PYTHON_INSTALL_DIR := $(CURDIR)/.cache/python
 export PYTHONDONTWRITEBYTECODE := 1
 
-.PHONY: setup check test test-jcs test-cel test-contract-toolchain test-first-contracts test-second-contracts test-fetch-decisions test-fetch-decision-matrix test-source-protocol probe-source-metadata schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
+.PHONY: setup check test test-jcs test-cel test-contract-toolchain test-first-contracts test-second-contracts test-fetch-decisions test-fetch-decision-matrix test-collection-config test-source-protocol probe-source-metadata schema-check schema-write measure-contract-matrix isolation-build test-isolation test-integration test-pg-concurrency test-kafka kafka-test-up lint migration-check api infra-up infra-down observability-up compose-check migrate smoke-infra smoke-observability
 
 # 保留已有本地配置，使用锁文件安装开发依赖。
 setup:
@@ -52,6 +52,10 @@ test-fetch-decisions:
 # 每次完整验证并输出逐违规组合的全部命中码，不与历史规模探针混淆。
 test-fetch-decision-matrix:
 	uv run --locked python -m scripts.verify_fetch_decisions
+
+# 首闭环载荷、有效配置锁、任务和签名前引用 / 根集合绑定。
+test-collection-config:
+	uv run --locked pytest tests/unit/test_collection_artifacts.py tests/unit/test_collection_config.py tests/unit/test_collection_payloads.py
 
 # 合成来源控制帧、真实 loopback WS 断线 / 恢复；默认 check 包含这些测试。
 test-source-protocol:

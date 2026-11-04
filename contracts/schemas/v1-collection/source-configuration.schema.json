@@ -1,0 +1,247 @@
+{
+  "$defs": {
+    "Identifier": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "PositiveCount": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "SafeCount": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "SemVer": {
+      "maxLength": 128,
+      "type": "string"
+    },
+    "Sha256": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "StableReference": {
+      "additionalProperties": false,
+      "description": "逻辑对象稳定身份；不携带 blob 实例 ID 或可变治理属性。",
+      "properties": {
+        "content_digest": {
+          "$ref": "#/$defs/Sha256",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "object_id": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        },
+        "version": {
+          "$ref": "#/$defs/Identifier",
+          "default_semantics": "required",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "required": [
+        "object_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "StableReference",
+      "type": "object"
+    },
+    "TimingBound": {
+      "additionalProperties": false,
+      "description": "late arrival 与控制送达界分别实例化，unknown 不伪造数值。",
+      "properties": {
+        "event_types": {
+          "default_semantics": "absent means no covered event types",
+          "digest": "include",
+          "items": {
+            "$ref": "#/$defs/Identifier"
+          },
+          "routable": false,
+          "title": "Event Types",
+          "type": "array"
+        },
+        "kind": {
+          "default": "unknown",
+          "default_semantics": "absent means no usable bound",
+          "digest": "include",
+          "enum": [
+            "unknown",
+            "sla",
+            "guarantee"
+          ],
+          "routable": false,
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PositiveCount"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "default_semantics": "milliseconds; absent only when kind is unknown",
+          "digest": "include",
+          "routable": false
+        }
+      },
+      "title": "TimingBound",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "平台提供的版本化资格 / 来源配置；布尔字段不能代替审批和身份认证。",
+  "properties": {
+    "artifact_digest": {
+      "$ref": "#/$defs/Sha256",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "comparison_basis": {
+      "anyOf": [
+        {
+          "enum": [
+            "upstream_event_time",
+            "authority_position",
+            "commit_order"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent inherits one fixed manifest comparison basis",
+      "digest": "include",
+      "routable": false,
+      "title": "Comparison Basis"
+    },
+    "compliance_ref": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "connector_name": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "control_delivery_bound": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TimingBound"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent inherits manifest control bound; explicit unknown is a separate declaration",
+      "digest": "include",
+      "routable": false
+    },
+    "enabled": {
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false,
+      "title": "Enabled",
+      "type": "boolean"
+    },
+    "environments": {
+      "default_semantics": "required",
+      "digest": "include",
+      "items": {
+        "enum": [
+          "test",
+          "development",
+          "target"
+        ],
+        "type": "string"
+      },
+      "routable": false,
+      "title": "Environments",
+      "type": "array"
+    },
+    "late_arrival_bound": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TimingBound"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent inherits manifest late-arrival bound",
+      "digest": "include",
+      "routable": false
+    },
+    "qualification_ref": {
+      "$ref": "#/$defs/StableReference",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "source_id": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "source_namespace": {
+      "$ref": "#/$defs/Identifier",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    },
+    "upstream_clock_skew_ms": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SafeCount"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "default_semantics": "absent inherits manifest clock bound, possibly unknown",
+      "digest": "include",
+      "routable": false
+    },
+    "version": {
+      "$ref": "#/$defs/SemVer",
+      "default_semantics": "required",
+      "digest": "include",
+      "routable": false
+    }
+  },
+  "required": [
+    "source_id",
+    "source_namespace",
+    "version",
+    "connector_name",
+    "artifact_digest",
+    "compliance_ref",
+    "qualification_ref",
+    "enabled",
+    "environments"
+  ],
+  "title": "SourceConfiguration",
+  "type": "object"
+}

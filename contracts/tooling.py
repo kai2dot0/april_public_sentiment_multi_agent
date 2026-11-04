@@ -67,14 +67,24 @@ def _reject_constant(_value: str) -> None:
     raise ValueError("Non-JSON constant")
 
 
-def decode_wire[Model: WireModel](model: type[Model], payload: bytes) -> Model:
-    """严格 UTF-8 JSON → 模型；保留整数精度，不校验开放枚举的取值。"""
+def decode_json_object(payload: bytes) -> dict:
+    """复用唯一严格 JSON 对象解码，供动态 CloudEvents 扩展映射使用。"""
     try:
         if type(payload) is not bytes:
             raise TypeError("Expected bytes")
         value = json.loads(payload.decode("utf-8"), object_pairs_hook=_unique_object, parse_constant=_reject_constant)
         # 保证转义后的字符串也可编码；同时拒绝数值溢出产生的 Infinity。
         json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
-        return model.model_validate(value, strict=True)
+        if type(value) is not dict:
+            raise TypeError("Expected JSON object")
+        return value
+    except (ValueError, TypeError, RecursionError, ValidationError):
+        raise WireDecodeError("Invalid wire structure or encoding") from None
+
+
+def decode_wire[Model: WireModel](model: type[Model], payload: bytes) -> Model:
+    """严格 UTF-8 JSON → 模型；保留整数精度，不校验开放枚举的取值。"""
+    try:
+        return model.model_validate(decode_json_object(payload), strict=True)
     except (ValueError, TypeError, RecursionError, ValidationError):
         raise WireDecodeError("Invalid wire structure or encoding") from None
